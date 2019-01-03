@@ -57,7 +57,7 @@ More information at [SovranoCoin.com](http://www.sovranocoin.com)
 <tr><td>Block Time</td><td>90 Seconds</td></tr>
 <tr><td>Block Split</td><td>80% MN / 20% Staking</td></tr>
 <tr><td>Difficulty Retargeting</td><td>Every Block</td></tr>
-<tr><td>Max Coin Supply</td><td>21.000.000 SVR</td></tr>
+<tr><td>Max Coin Supply</td><td>6.000.000 SVR</td></tr>
 <tr><td>Premine</td><td>110.000 SVR</td></tr>
 <tr><td>P2P port</td><td>6610</td></tr>
 <tr><td>RPC port</td><td>6611</td></tr>
