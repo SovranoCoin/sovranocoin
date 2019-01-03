@@ -1,0 +1,26 @@
+# /etc/conf.d/sovranocoind: config file for /etc/init.d/sovranocoind
+
+# Config file location
+#BITCOIND_CONFIGFILE="/etc/sovranocoin/sovranocoin.conf"
+
+# What directory to write pidfile to?  (created and owned by $BITCOIND_USER)
+#BITCOIND_PIDDIR="/var/run/sovranocoind"
+
+# What filename to give the pidfile
+#BITCOIND_PIDFILE="${BITCOIND_PIDDIR}/sovranocoind.pid"
+
+# Where to write sovranocoind data (be mindful that the blockchain is large)
+#BITCOIND_DATADIR="/var/lib/sovranocoind"
+
+# User and group to own sovranocoind process
+#BITCOIND_USER="sovranocoin"
+#BITCOIND_GROUP="sovranocoin"
+
+# Path to sovranocoind executable
+#BITCOIND_BIN="/usr/bin/sovranocoind"
+
+# Nice value to run sovranocoind under
+#BITCOIND_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+BITCOIND_OPTS=""

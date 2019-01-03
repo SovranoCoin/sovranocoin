@@ -1,0 +1,11 @@
+[Protocol]
+exec=sovranocoin-qt '%u'
+protocol=sovranocoin
+input=none
+output=none
+helper=true
+listing=
+reading=false
+writing=false
+makedir=false
+deleting=false
