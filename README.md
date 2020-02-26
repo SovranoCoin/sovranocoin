@@ -51,9 +51,9 @@ Demon status:
 ## Setting up a wallet with the bootstrap
 
 1. Stop/shutdown your wallet client if it is running.
-2. Navigate to your SovranoCoin data directory
+2. Navigate to your SovranoCoin data directory.
 3. Download the latest bootstrap from [here](https://github.com/SovranoCoin/sovranocoin/releases/download/2.0.0/SVRchain-bootstrap.zip)
-4. Extract the bootstrap zip file you just downloaded and you will see a directory file called "Sovrano-bootstrap". Copy its content to your SovranoCoin data directory replacing all files.
+4. Extract the bootstrap zip file you just downloaded and you will see a directory file called "Sovrano-bootstrap" and copy its content to your SovranoCoin data directory replacing all files.
 5. Start your wallet client.
 
 More information at [SovranoCoin.com](http://www.sovranocoin.com)
