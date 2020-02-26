@@ -48,11 +48,7 @@ Demon status:
 
 
 
-More information at [SovranoCoin.com](http://www.sovranocoin.com)
-
-
-
-### Setting up a wallet with the bootstrap
+## Setting up a wallet with the bootstrap
 
 1. Stop/shutdown your wallet client if it is running.
 2. Navigate to your SovranoCoin data directory
@@ -60,9 +56,11 @@ More information at [SovranoCoin.com](http://www.sovranocoin.com)
 4. Extract the bootstrap zip file you just downloaded and you will see a directory file called "Sovrano-bootstrap". Copy its content to your SovranoCoin data directory replacing all files.
 5. Start your wallet client.
 
+More information at [SovranoCoin.com](http://www.sovranocoin.com)
 
 
-### Coin Specs
+
+## Coin Specs
 <table>
 <tr><td>Algo</td><td>Quark</td></tr>
 <tr><td>Block Time</td><td>90 Seconds</td></tr>
