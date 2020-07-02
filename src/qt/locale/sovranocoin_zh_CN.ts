@@ -4390,7 +4390,7 @@ SOVRANOCOIN零币(zSVR)技术文件
         <translation>
 &lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align="justify"&gt;
 主节点是运行完整节点SOVRANOCOIN核心钱包的计算机
-需要10,000个SVR作抵押以提供额外服务
+需要1,000个SVR作抵押以提供额外服务
 到网络，会收到一部分的区块奖励作为定期
 回报
 这些服务包括:
