@@ -10,6 +10,7 @@
 #include "main.h"
 #include "masternode-budget.h"
 #include "masternode-payments.h"
+#include "masternode-sync.h"
 #include "masternodeconfig.h"
 #include "masternodeman.h"
 #include "messagesigner.h"
@@ -24,7 +25,6 @@ void budgetToJSON(CBudgetProposal* pbudgetProposal, UniValue& bObj)
 {
     CTxDestination address1;
     ExtractDestination(pbudgetProposal->GetPayee(), address1);
-    CBitcoinAddress address2(address1);
 
     bObj.push_back(Pair("Name", pbudgetProposal->GetName()));
     bObj.push_back(Pair("URL", pbudgetProposal->GetURL()));
@@ -34,7 +34,7 @@ void budgetToJSON(CBudgetProposal* pbudgetProposal, UniValue& bObj)
     bObj.push_back(Pair("BlockEnd", (int64_t)pbudgetProposal->GetBlockEnd()));
     bObj.push_back(Pair("TotalPaymentCount", (int64_t)pbudgetProposal->GetTotalPaymentCount()));
     bObj.push_back(Pair("RemainingPaymentCount", (int64_t)pbudgetProposal->GetRemainingPaymentCount()));
-    bObj.push_back(Pair("PaymentAddress", address2.ToString()));
+    bObj.push_back(Pair("PaymentAddress", EncodeDestination(address1)));
     bObj.push_back(Pair("Ratio", pbudgetProposal->GetRatio()));
     bObj.push_back(Pair("Yeas", (int64_t)pbudgetProposal->GetYeas()));
     bObj.push_back(Pair("Nays", (int64_t)pbudgetProposal->GetNays()));
@@ -50,7 +50,7 @@ void budgetToJSON(CBudgetProposal* pbudgetProposal, UniValue& bObj)
 }
 
 void checkBudgetInputs(const UniValue& params, std::string &strProposalName, std::string &strURL,
-                       int &nPaymentCount, int &nBlockStart, CBitcoinAddress &address, CAmount &nAmount)
+                       int &nPaymentCount, int &nBlockStart, CTxDestination &address, CAmount &nAmount)
 {
     strProposalName = SanitizeString(params[0].get_str());
     if (strProposalName.size() > 20)
@@ -70,7 +70,7 @@ void checkBudgetInputs(const UniValue& params, std::string &strProposalName, std
         throw JSONRPCError(RPC_IN_WARMUP, "Try again after active chain is loaded");
 
     // Start must be in the next budget cycle or later
-    const int budgetCycleBlocks = Params().GetBudgetCycleBlocks();
+    const int budgetCycleBlocks = Params().GetConsensus().nBudgetCycleBlocks;
     int pHeight = pindexPrev->nHeight;
 
     int nBlockMin = pHeight - (pHeight % budgetCycleBlocks) + budgetCycleBlocks;
@@ -79,23 +79,23 @@ void checkBudgetInputs(const UniValue& params, std::string &strProposalName, std
     if ((nBlockStart < nBlockMin) || ((nBlockStart % budgetCycleBlocks) != 0))
         throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Invalid block start - must be a budget cycle block. Next valid block: %d", nBlockMin));
 
-    address = params[4].get_str();
-    if (!address.IsValid())
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid PIVX address");
+    address = DecodeDestination(params[4].get_str());
+    if (!IsValidDestination(address))
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid SOVRANOCOIN address");
 
     nAmount = AmountFromValue(params[5]);
     if (nAmount < 10 * COIN)
-        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Invalid amount - Payment of %d is less than minimum 10 PIV allowed", FormatMoney(nAmount)));
+        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Invalid amount - Payment of %s is less than minimum 10 %s allowed", FormatMoney(nAmount), CURRENCY_UNIT));
 
     if (nAmount > budget.GetTotalBudget(nBlockStart))
-        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Invalid amount - Payment of %d more than max of %d", FormatMoney(nAmount), FormatMoney(budget.GetTotalBudget(nBlockStart))));
+        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("Invalid amount - Payment of %s more than max of %s", FormatMoney(nAmount), FormatMoney(budget.GetTotalBudget(nBlockStart))));
 }
 
 UniValue preparebudget(const UniValue& params, bool fHelp)
 {
     if (fHelp || params.size() != 6)
         throw std::runtime_error(
-            "preparebudget \"proposal-name\" \"url\" payment-count block-start \"pivx-address\" monthy-payment\n"
+            "preparebudget \"proposal-name\" \"url\" payment-count block-start \"sovranocoin-address\" monthy-payment\n"
             "\nPrepare proposal for network by signing and creating tx\n"
 
             "\nArguments:\n"
@@ -103,15 +103,15 @@ UniValue preparebudget(const UniValue& params, bool fHelp)
             "2. \"url\":            (string, required) URL of proposal details (64 character limit)\n"
             "3. payment-count:    (numeric, required) Total number of monthly payments\n"
             "4. block-start:      (numeric, required) Starting super block height\n"
-            "5. \"pivx-address\":   (string, required) PIVX address to send payments to\n"
+            "5. \"sovranocoin-address\":   (string, required) SOVRANOCOIN address to send payments to\n"
             "6. monthly-payment:  (numeric, required) Monthly payment amount\n"
 
             "\nResult:\n"
             "\"xxxx\"       (string) proposal fee hash (if successful) or error message (if failed)\n"
 
             "\nExamples:\n" +
-            HelpExampleCli("preparebudget", "\"test-proposal\" \"https://forum.pivx.org/t/test-proposal\" 2 820800 \"D9oc6C3dttUbv8zd7zGNq1qKBGf4ZQ1XEE\" 500") +
-            HelpExampleRpc("preparebudget", "\"test-proposal\" \"https://forum.pivx.org/t/test-proposal\" 2 820800 \"D9oc6C3dttUbv8zd7zGNq1qKBGf4ZQ1XEE\" 500"));
+            HelpExampleCli("preparebudget", "\"test-proposal\" \"https://forum.sovranocoin.org/t/test-proposal\" 2 820800 \"D9oc6C3dttUbv8zd7zGNq1qKBGf4ZQ1XEE\" 500") +
+            HelpExampleRpc("preparebudget", "\"test-proposal\" \"https://forum.sovranocoin.org/t/test-proposal\" 2 820800 \"D9oc6C3dttUbv8zd7zGNq1qKBGf4ZQ1XEE\" 500"));
 
     if (!pwalletMain) {
         throw JSONRPCError(RPC_IN_WARMUP, "Try again after active chain is loaded");
@@ -125,16 +125,16 @@ UniValue preparebudget(const UniValue& params, bool fHelp)
     std::string strURL;
     int nPaymentCount;
     int nBlockStart;
-    CBitcoinAddress address;
+    CTxDestination address;
     CAmount nAmount;
 
     checkBudgetInputs(params, strProposalName, strURL, nPaymentCount, nBlockStart, address, nAmount);
 
     // Parse PIVX address
-    CScript scriptPubKey = GetScriptForDestination(address.Get());
+    CScript scriptPubKey = GetScriptForDestination(address);
 
     // create transaction 15 minutes into the future, to allow for confirmation time
-    CBudgetProposalBroadcast budgetProposalBroadcast(strProposalName, strURL, nPaymentCount, scriptPubKey, nAmount, nBlockStart, 0);
+    CBudgetProposalBroadcast budgetProposalBroadcast(strProposalName, strURL, nPaymentCount, scriptPubKey, nAmount, nBlockStart, UINT256_ZERO);
 
     std::string strError = "";
     if (!budgetProposalBroadcast.IsValid(strError, false))
@@ -155,7 +155,9 @@ UniValue preparebudget(const UniValue& params, bool fHelp)
     // make our change address
     CReserveKey reservekey(pwalletMain);
     //send the tx to the network
-    pwalletMain->CommitTransaction(wtx, reservekey, useIX ? "ix" : "tx");
+    const CWallet::CommitResult& res = pwalletMain->CommitTransaction(wtx, reservekey, useIX ? NetMsgType::IX : NetMsgType::TX);
+    if (res.status != CWallet::CommitStatus::OK)
+        throw JSONRPCError(RPC_WALLET_ERROR, res.ToString());
 
     return wtx.GetHash().ToString();
 }
@@ -164,7 +166,7 @@ UniValue submitbudget(const UniValue& params, bool fHelp)
 {
     if (fHelp || params.size() != 7)
         throw std::runtime_error(
-            "submitbudget \"proposal-name\" \"url\" payment-count block-start \"pivx-address\" monthly-payment \"fee-tx\"\n"
+            "submitbudget \"proposal-name\" \"url\" payment-count block-start \"sovranocoin-address\" monthly-payment \"fee-tx\"\n"
             "\nSubmit proposal to the network\n"
 
             "\nArguments:\n"
@@ -172,7 +174,7 @@ UniValue submitbudget(const UniValue& params, bool fHelp)
             "2. \"url\":            (string, required) URL of proposal details (64 character limit)\n"
             "3. payment-count:    (numeric, required) Total number of monthly payments\n"
             "4. block-start:      (numeric, required) Starting super block height\n"
-            "5. \"pivx-address\":   (string, required) PIVX address to send payments to\n"
+            "5. \"sovranocoin-address\":   (string, required) SOVRANOCOIN address to send payments to\n"
             "6. monthly-payment:  (numeric, required) Monthly payment amount\n"
             "7. \"fee-tx\":         (string, required) Transaction hash from preparebudget command\n"
 
@@ -180,20 +182,20 @@ UniValue submitbudget(const UniValue& params, bool fHelp)
             "\"xxxx\"       (string) proposal hash (if successful) or error message (if failed)\n"
 
             "\nExamples:\n" +
-            HelpExampleCli("submitbudget", "\"test-proposal\" \"https://forum.pivx.org/t/test-proposal\" 2 820800 \"D9oc6C3dttUbv8zd7zGNq1qKBGf4ZQ1XEE\" 500") +
-            HelpExampleRpc("submitbudget", "\"test-proposal\" \"https://forum.pivx.org/t/test-proposal\" 2 820800 \"D9oc6C3dttUbv8zd7zGNq1qKBGf4ZQ1XEE\" 500"));
+            HelpExampleCli("submitbudget", "\"test-proposal\" \"https://forum.sovranocoin.org/t/test-proposal\" 2 820800 \"D9oc6C3dttUbv8zd7zGNq1qKBGf4ZQ1XEE\" 500") +
+            HelpExampleRpc("submitbudget", "\"test-proposal\" \"https://forum.sovranocoin.org/t/test-proposal\" 2 820800 \"D9oc6C3dttUbv8zd7zGNq1qKBGf4ZQ1XEE\" 500"));
 
     std::string strProposalName;
     std::string strURL;
     int nPaymentCount;
     int nBlockStart;
-    CBitcoinAddress address;
+    CTxDestination address;
     CAmount nAmount;
 
     checkBudgetInputs(params, strProposalName, strURL, nPaymentCount, nBlockStart, address, nAmount);
 
     // Parse PIVX address
-    CScript scriptPubKey = GetScriptForDestination(address.Get());
+    CScript scriptPubKey = GetScriptForDestination(address);
 
     uint256 hash = ParseHashV(params[6], "parameter 1");
 
@@ -274,12 +276,6 @@ UniValue mnbudgetvote(const UniValue& params, bool fHelp)
     int success = 0;
     int failed = 0;
 
-    bool fNewSigs = false;
-    {
-        LOCK(cs_main);
-        fNewSigs = chainActive.NewSigsActive();
-    }
-
     UniValue resultsObj(UniValue::VARR);
 
     if (strCommand == "local") {
@@ -309,7 +305,7 @@ UniValue mnbudgetvote(const UniValue& params, bool fHelp)
             }
 
             CBudgetVote vote(activeMasternode.vin, hash, nVote);
-            if (!vote.Sign(keyMasternode, pubKeyMasternode, fNewSigs)) {
+            if (!vote.Sign(keyMasternode, pubKeyMasternode)) {
                 failed++;
                 statusObj.push_back(Pair("node", "local"));
                 statusObj.push_back(Pair("result", "failed"));
@@ -375,7 +371,7 @@ UniValue mnbudgetvote(const UniValue& params, bool fHelp)
             }
 
             CBudgetVote vote(pmn->vin, hash, nVote);
-            if (!vote.Sign(keyMasternode, pubKeyMasternode, fNewSigs)) {
+            if (!vote.Sign(keyMasternode, pubKeyMasternode)) {
                 failed++;
                 statusObj.push_back(Pair("node", mne.getAlias()));
                 statusObj.push_back(Pair("result", "failed"));
@@ -449,7 +445,7 @@ UniValue mnbudgetvote(const UniValue& params, bool fHelp)
             }
 
             CBudgetVote vote(pmn->vin, hash, nVote);
-            if(!vote.Sign(keyMasternode, pubKeyMasternode, fNewSigs)){
+            if(!vote.Sign(keyMasternode, pubKeyMasternode)){
                 failed++;
                 statusObj.push_back(Pair("node", mne.getAlias()));
                 statusObj.push_back(Pair("result", "failed"));
@@ -552,7 +548,8 @@ UniValue getnextsuperblock(const UniValue& params, bool fHelp)
     CBlockIndex* pindexPrev = chainActive.Tip();
     if (!pindexPrev) return "unknown";
 
-    int nNext = pindexPrev->nHeight - pindexPrev->nHeight % Params().GetBudgetCycleBlocks() + Params().GetBudgetCycleBlocks();
+    const int nBlocksPerCycle = Params().GetConsensus().nBudgetCycleBlocks;
+    int nNext = pindexPrev->nHeight - pindexPrev->nHeight % nBlocksPerCycle + nBlocksPerCycle;
     return nNext;
 }
 
@@ -574,7 +571,7 @@ UniValue getbudgetprojection(const UniValue& params, bool fHelp)
             "    \"BlockEnd\": n,                (numeric) Proposal ending block\n"
             "    \"TotalPaymentCount\": n,       (numeric) Number of payments\n"
             "    \"RemainingPaymentCount\": n,   (numeric) Number of remaining payments\n"
-            "    \"PaymentAddress\": \"xxxx\",     (string) PIVX address of payment\n"
+            "    \"PaymentAddress\": \"xxxx\",     (string) SOVRANOCOIN address of payment\n"
             "    \"Ratio\": x.xxx,               (numeric) Ratio of yeas vs nays\n"
             "    \"Yeas\": n,                    (numeric) Number of yea votes\n"
             "    \"Nays\": n,                    (numeric) Number of nay votes\n"
@@ -604,7 +601,6 @@ UniValue getbudgetprojection(const UniValue& params, bool fHelp)
 
         CTxDestination address1;
         ExtractDestination(pbudgetProposal->GetPayee(), address1);
-        CBitcoinAddress address2(address1);
 
         UniValue bObj(UniValue::VOBJ);
         budgetToJSON(pbudgetProposal, bObj);
@@ -638,7 +634,7 @@ UniValue getbudgetinfo(const UniValue& params, bool fHelp)
             "    \"BlockEnd\": n,                (numeric) Proposal ending block\n"
             "    \"TotalPaymentCount\": n,       (numeric) Number of payments\n"
             "    \"RemainingPaymentCount\": n,   (numeric) Number of remaining payments\n"
-            "    \"PaymentAddress\": \"xxxx\",     (string) PIVX address of payment\n"
+            "    \"PaymentAddress\": \"xxxx\",     (string) SOVRANOCOIN address of payment\n"
             "    \"Ratio\": x.xxx,               (numeric) Ratio of yeas vs nays\n"
             "    \"Yeas\": n,                    (numeric) Number of yea votes\n"
             "    \"Nays\": n,                    (numeric) Number of nay votes\n"
@@ -766,18 +762,12 @@ UniValue mnfinalbudget(const UniValue& params, bool fHelp)
             "  show        - Show existing finalized budgets\n"
             "  getvotes     - Get vote information for each finalized budget\n");
 
-    bool fNewSigs = false;
-    {
-        LOCK(cs_main);
-        fNewSigs = chainActive.NewSigsActive();
-    }
-
     if (strCommand == "vote-many") {
         if (params.size() != 2)
             throw std::runtime_error("Correct usage is 'mnfinalbudget vote-many BUDGET_HASH'");
 
         std::string strHash = params[1].get_str();
-        uint256 hash(strHash);
+        uint256 hash(uint256S(strHash));
 
         int success = 0;
         int failed = 0;
@@ -814,7 +804,7 @@ UniValue mnfinalbudget(const UniValue& params, bool fHelp)
 
 
             CFinalizedBudgetVote vote(pmn->vin, hash);
-            if (!vote.Sign(keyMasternode, pubKeyMasternode, fNewSigs)) {
+            if (!vote.Sign(keyMasternode, pubKeyMasternode)) {
                 failed++;
                 statusObj.push_back(Pair("result", "failed"));
                 statusObj.push_back(Pair("errorMessage", "Failure to sign."));
@@ -848,7 +838,7 @@ UniValue mnfinalbudget(const UniValue& params, bool fHelp)
             throw std::runtime_error("Correct usage is 'mnfinalbudget vote BUDGET_HASH'");
 
         std::string strHash = params[1].get_str();
-        uint256 hash(strHash);
+        uint256 hash(uint256S(strHash));
 
         CPubKey pubKeyMasternode;
         CKey keyMasternode;
@@ -862,7 +852,7 @@ UniValue mnfinalbudget(const UniValue& params, bool fHelp)
         }
 
         CFinalizedBudgetVote vote(activeMasternode.vin, hash);
-        if (!vote.Sign(keyMasternode, pubKeyMasternode, fNewSigs)) {
+        if (!vote.Sign(keyMasternode, pubKeyMasternode)) {
             return "Failure to sign.";
         }
 
@@ -905,7 +895,7 @@ UniValue mnfinalbudget(const UniValue& params, bool fHelp)
             throw std::runtime_error("Correct usage is 'mnbudget getvotes budget-hash'");
 
         std::string strHash = params[1].get_str();
-        uint256 hash(strHash);
+        uint256 hash(uint256S(strHash));
 
         UniValue obj(UniValue::VOBJ);
 

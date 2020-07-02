@@ -1,32 +1,15 @@
-// Copyright (c) 2017-2019 The PIVX developers
+// Copyright (c) 2017-2020 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "blocksignature.h"
 #include "main.h"
-#include "zpivchain.h"
+#include "zsvrchain.h"
 
 bool SignBlockWithKey(CBlock& block, const CKey& key)
 {
     if (!key.Sign(block.GetHash(), block.vchBlockSig))
         return error("%s: failed to sign block hash with key", __func__);
-
-    return true;
-}
-
-bool GetKeyIDFromUTXO(const CTxOut& txout, CKeyID& keyID)
-{
-    std::vector<valtype> vSolutions;
-    txnouttype whichType;
-    if (!Solver(txout.scriptPubKey, whichType, vSolutions))
-        return false;
-    if (whichType == TX_PUBKEY) {
-        keyID = CPubKey(vSolutions[0]).GetID();
-    } else if (whichType == TX_PUBKEYHASH || whichType == TX_COLDSTAKE) {
-        keyID = CKeyID(uint160(vSolutions[0]));
-    } else {
-        return false;
-    }
 
     return true;
 }
@@ -37,7 +20,7 @@ bool SignBlock(CBlock& block, const CKeyStore& keystore)
     if (block.IsProofOfWork()) {
         bool fFoundID = false;
         for (const CTxOut& txout :block.vtx[0].vout) {
-            if (!GetKeyIDFromUTXO(txout, keyID))
+            if (!txout.GetKeyIDFromUTXO(keyID))
                 continue;
             fFoundID = true;
             break;
@@ -45,7 +28,7 @@ bool SignBlock(CBlock& block, const CKeyStore& keystore)
         if (!fFoundID)
             return error("%s: failed to find key for PoW", __func__);
     } else {
-        if (!GetKeyIDFromUTXO(block.vtx[1].vout[1], keyID))
+        if (!block.vtx[1].vout[1].GetKeyIDFromUTXO(keyID))
             return error("%s: failed to find key for PoS", __func__);
     }
 
@@ -69,8 +52,8 @@ bool CheckBlockSignature(const CBlock& block)
      *  UTXO: The public key that signs must match the public key associated with the first utxo of the coinstake tx.
      */
     CPubKey pubkey;
-    bool fzPIVStake = block.vtx[1].vin[0].IsZerocoinSpend();
-    if (fzPIVStake) {
+    bool fzSVRStake = block.vtx[1].vin[0].IsZerocoinSpend();
+    if (fzSVRStake) {
         libzerocoin::CoinSpend spend = TxInToZerocoinSpend(block.vtx[1].vin[0]);
         pubkey = spend.getPubKey();
     } else {

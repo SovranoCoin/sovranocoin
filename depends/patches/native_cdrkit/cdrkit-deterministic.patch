@@ -36,7 +36,7 @@
 +	if (current_file < 0 || !d_entry) {
  		int	ret = 1;
  
- #ifdef	USE_LIBSVRILY
+ #ifdef	USE_LIBSCHILY
 @@ -1191,8 +1193,8 @@
  			de->isorec.flags[0] &= ~ISO_DIRECTORY;
  			ret = 0;

@@ -1,0 +1,15 @@
+# http://standards.freedesktop.org/desktop-entry-spec/desktop-entry-spec-1.0.html
+
+[Desktop Entry]
+Encoding=UTF-8
+Name=SOVRANOCOIN Core Daemon SNAP
+Comment=main
+GenericName=SOVRANOCOIN Digital Currency Daemon Client main network
+Exec=sovranocoin-core.daemon %u
+Terminal=true
+Type=Application
+Icon=${SNAP}/share/pixmaps/sovranocoin.png
+MimeType=x-scheme-handler/svr;
+Categories=X-Office;X-Finance;
+Keywords=internet;sovranocoin;zsvr;core;wallet;daemon;main;snap;launchpad;crypto;digital;currency;coin;token;zerocoin;
+Version=1.0

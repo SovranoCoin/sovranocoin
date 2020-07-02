@@ -1,2 +1,3 @@
 usr/local/bin/sovranocoind usr/bin
 usr/local/bin/sovranocoin-cli usr/bin
+debian/examples/sovranocoin.conf etc/sovranocoin

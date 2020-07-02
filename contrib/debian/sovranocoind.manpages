@@ -1,2 +1,2 @@
-debian/manpages/sovranocoind.1
-debian/manpages/sovranocoin.conf.5
+doc/man/sovranocoind.1
+doc/man/sovranocoin-cli.1

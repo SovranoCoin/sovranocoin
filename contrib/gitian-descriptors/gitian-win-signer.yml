@@ -1,20 +1,24 @@
 ---
 name: "sovranocoin-win-signer"
+distro: "ubuntu"
 suites:
-- "trusty"
+- "bionic"
 architectures:
 - "amd64"
 packages:
-- "libssl-dev"
+# Once osslsigncode supports openssl 1.1, we can change this back to libssl-dev
+- "libssl1.0-dev"
 - "autoconf"
 remotes:
-- "url": "https://github.com/eastcoastcrypto/sovranocoin-detached-sigs.git"
+- "url": "https://github.com/sovranocoin-project/sovranocoin-detached-sigs.git"
   "dir": "signature"
 files:
 - "osslsigncode-1.7.1.tar.gz"
 - "osslsigncode-Backports-to-1.7.1.patch"
 - "sovranocoin-win-unsigned.tar.gz"
 script: |
+  set -e -o pipefail
+
   BUILD_DIR=`pwd`
   SIGDIR=${BUILD_DIR}/signature/win
   UNSIGNED_DIR=${BUILD_DIR}/unsigned

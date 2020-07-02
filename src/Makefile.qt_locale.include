@@ -1,0 +1,14 @@
+QT_TS = \
+  qt/locale/sovranocoin_de.ts \
+  qt/locale/sovranocoin_en.ts \
+  qt/locale/sovranocoin_en_US.ts \
+  qt/locale/sovranocoin_es.ts \
+  qt/locale/sovranocoin_fr_FR.ts \
+  qt/locale/sovranocoin_hr_HR.ts \
+  qt/locale/sovranocoin_it.ts \
+  qt/locale/sovranocoin_ko_KR.ts \
+  qt/locale/sovranocoin_nl.ts \
+  qt/locale/sovranocoin_pl.ts \
+  qt/locale/sovranocoin_ru.ts \
+  qt/locale/sovranocoin_tr.ts \
+  qt/locale/sovranocoin_zh_CN.ts

@@ -1,12 +1,13 @@
 [Desktop Entry]
-Encoding=UTF-8
-Name=SovranoCoin
-Comment=SovranoCoin P2P Cryptocurrency
-Comment[fr]=SovranoCoin, monnaie virtuelle cryptographique pair à pair
-Comment[tr]=SovranoCoin, eşten eşe kriptografik sanal para birimi
+Version=1.0
+Name=SOVRANOCOIN Core
+Comment=SOVRANOCOIN P2P Cryptocurrency
+Comment[fr]=SOVRANOCOIN, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=SOVRANOCOIN, eşten eşe kriptografik sanal para birimi
 Exec=sovranocoin-qt %u
 Terminal=false
 Type=Application
 Icon=sovranocoin128
 MimeType=x-scheme-handler/sovranocoin;
 Categories=Office;Finance;
+StartupWMClass=Sovranocoin-qt

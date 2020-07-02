@@ -1,1 +1,2 @@
 contrib/sovranocoind.bash-completion	sovranocoind
+contrib/sovranocoin-cli.bash-completion sovranocoin-cli

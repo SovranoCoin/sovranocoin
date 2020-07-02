@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PIVX_ADDRESSBOOK_H
-#define PIVX_ADDRESSBOOK_H
+#ifndef SOVRANOCOIN_ADDRESSBOOK_H
+#define SOVRANOCOIN_ADDRESSBOOK_H
 
 #include <map>
 #include <string>

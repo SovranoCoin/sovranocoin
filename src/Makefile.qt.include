@@ -1,113 +1,163 @@
+# Copyright (c) 2013-2016 The Bitcoin Core developers
+# Distributed under the MIT software license, see the accompanying
+# file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
 bin_PROGRAMS += qt/sovranocoin-qt
 EXTRA_LIBRARIES += qt/libbitcoinqt.a
 
 # sovranocoin qt core #
-QT_TS = \
-  qt/locale/sovranocoin_bg.ts \
-  qt/locale/sovranocoin_ca.ts \
-  qt/locale/sovranocoin_cs.ts \
-  qt/locale/sovranocoin_da.ts \
-  qt/locale/sovranocoin_de.ts \
-  qt/locale/sovranocoin_en.ts \
-  qt/locale/sovranocoin_en_US.ts \
-  qt/locale/sovranocoin_es.ts \
-  qt/locale/sovranocoin_fi.ts \
-  qt/locale/sovranocoin_fr_FR.ts \
-  qt/locale/sovranocoin_hr.ts \
-  qt/locale/sovranocoin_it.ts \
-  qt/locale/sovranocoin_ja.ts \
-  qt/locale/sovranocoin_ko_KR.ts \
-  qt/locale/sovranocoin_nl.ts \
-  qt/locale/sovranocoin_pl.ts \
-  qt/locale/sovranocoin_pt.ts \
-  qt/locale/sovranocoin_pt_BR.ts \
-  qt/locale/sovranocoin_ro_RO.ts \
-  qt/locale/sovranocoin_ru.ts \
-  qt/locale/sovranocoin_sk.ts \
-  qt/locale/sovranocoin_sv.ts \
-  qt/locale/sovranocoin_tr.ts \
-  qt/locale/sovranocoin_uk.ts \
-  qt/locale/sovranocoin_zh_CN.ts \
-  qt/locale/sovranocoin_zh_TW.ts
+include Makefile.qt_locale.include
 
 QT_FORMS_UI = \
   qt/forms/addressbookpage.ui \
   qt/forms/askpassphrasedialog.ui \
-  qt/forms/bip38tooldialog.ui \
   qt/forms/coincontroldialog.ui \
-  qt/forms/blockexplorer.ui \
-  qt/forms/obfuscationconfig.ui \
   qt/forms/editaddressdialog.ui \
   qt/forms/helpmessagedialog.ui \
   qt/forms/intro.ui \
-  qt/forms/masternodelist.ui \
-  qt/forms/multisenddialog.ui \
-  qt/forms/multisigdialog.ui\
   qt/forms/openuridialog.ui \
   qt/forms/optionsdialog.ui \
-  qt/forms/overviewpage.ui \
-  qt/forms/receivecoinsdialog.ui \
-  qt/forms/privacydialog.ui \
-  qt/forms/receiverequestdialog.ui \
   qt/forms/rpcconsole.ui \
-  qt/forms/sendcoinsdialog.ui \
-  qt/forms/sendcoinsentry.ui \
-  qt/forms/signverifymessagedialog.ui \
-  qt/forms/transactiondescdialog.ui \
-  qt/forms/zSVRcontroldialog.ui
+  qt/sovranocoin/forms/loadingdialog.ui \
+  qt/forms/zsvrcontroldialog.ui \
+  qt/sovranocoin/forms/snackbar.ui \
+  qt/sovranocoin/forms/navmenuwidget.ui \
+  qt/sovranocoin/forms/lockunlock.ui \
+  qt/sovranocoin/forms/expandablebutton.ui \
+  qt/sovranocoin/forms/receivedialog.ui \
+  qt/sovranocoin/forms/topbar.ui \
+  qt/sovranocoin/forms/txrow.ui \
+  qt/sovranocoin/forms/dashboardwidget.ui \
+  qt/sovranocoin/forms/addresslabelrow.ui \
+  qt/sovranocoin/forms/contactdropdownrow.ui \
+  qt/sovranocoin/forms/mninfodialog.ui \
+  qt/sovranocoin/forms/optionbutton.ui \
+  qt/sovranocoin/forms/masternodewizarddialog.ui \
+  qt/sovranocoin/forms/mnrow.ui \
+  qt/sovranocoin/forms/masternodeswidget.ui \
+  qt/sovranocoin/forms/myaddressrow.ui \
+  qt/sovranocoin/forms/csrow.ui \
+  qt/sovranocoin/forms/sendchangeaddressdialog.ui \
+  qt/sovranocoin/forms/sendconfirmdialog.ui \
+  qt/sovranocoin/forms/sendcustomfeedialog.ui \
+  qt/sovranocoin/forms/sendchangeaddressdialog.ui \
+  qt/sovranocoin/forms/sendmultirow.ui \
+  qt/sovranocoin/forms/send.ui \
+  qt/sovranocoin/forms/addnewaddressdialog.ui \
+  qt/sovranocoin/forms/addnewcontactdialog.ui \
+  qt/sovranocoin/forms/requestdialog.ui \
+  qt/sovranocoin/forms/receivewidget.ui \
+  qt/sovranocoin/forms/tooltipmenu.ui \
+  qt/sovranocoin/forms/addresseswidget.ui \
+  qt/sovranocoin/forms/defaultdialog.ui \
+  qt/sovranocoin/forms/coldstakingwidget.ui \
+  qt/sovranocoin/settings/forms/settingsbackupwallet.ui \
+  qt/sovranocoin/settings/forms/settingsexportcsv.ui \
+  qt/sovranocoin/settings/forms/settingsbittoolwidget.ui \
+  qt/sovranocoin/settings/forms/settingsconsolewidget.ui \
+  qt/sovranocoin/settings/forms/settingsdisplayoptionswidget.ui \
+  qt/sovranocoin/settings/forms/settingsfaqwidget.ui \
+  qt/sovranocoin/settings/forms/settingsinformationwidget.ui \
+  qt/sovranocoin/settings/forms/settingsmainoptionswidget.ui \
+  qt/sovranocoin/settings/forms/settingsmultisenddialog.ui \
+  qt/sovranocoin/settings/forms/settingsmultisendwidget.ui \
+  qt/sovranocoin/settings/forms/settingssignmessagewidgets.ui \
+  qt/sovranocoin/settings/forms/settingswalletoptionswidget.ui \
+  qt/sovranocoin/settings/forms/settingswalletrepairwidget.ui \
+  qt/sovranocoin/settings/forms/settingswidget.ui \
+  qt/sovranocoin/forms/welcomecontentwidget.ui \
+  qt/sovranocoin/forms/splash.ui
 
 QT_MOC_CPP = \
   qt/moc_addressbookpage.cpp \
   qt/moc_addresstablemodel.cpp \
   qt/moc_askpassphrasedialog.cpp \
-  qt/moc_bip38tooldialog.cpp \
+  qt/moc_bantablemodel.cpp \
   qt/moc_bitcoinaddressvalidator.cpp \
-  qt/moc_bitcoinamountfield.cpp \
-  qt/moc_bitcoingui.cpp \
+  qt/sovranocoin/moc_sovranocoingui.cpp \
   qt/moc_bitcoinunits.cpp \
-  qt/moc_blockexplorer.cpp \
   qt/moc_clientmodel.cpp \
   qt/moc_coincontroldialog.cpp \
   qt/moc_coincontroltreewidget.cpp \
   qt/moc_csvmodelwriter.cpp \
-  qt/moc_obfuscationconfig.cpp \
   qt/moc_editaddressdialog.cpp \
   qt/moc_guiutil.cpp \
   qt/moc_intro.cpp \
   qt/moc_macdockiconhandler.cpp \
   qt/moc_macnotificationhandler.cpp \
-  qt/moc_masternodelist.cpp \
-  qt/moc_multisenddialog.cpp \
-  qt/moc_multisigdialog.cpp\
   qt/moc_notificator.cpp \
   qt/moc_openuridialog.cpp \
   qt/moc_optionsdialog.cpp \
   qt/moc_optionsmodel.cpp \
-  qt/moc_overviewpage.cpp \
   qt/moc_peertablemodel.cpp \
   qt/moc_paymentserver.cpp \
   qt/moc_qvalidatedlineedit.cpp \
   qt/moc_qvaluecombobox.cpp \
-  qt/moc_receivecoinsdialog.cpp \
-  qt/moc_privacydialog.cpp \
-  qt/moc_receiverequestdialog.cpp \
   qt/moc_recentrequeststablemodel.cpp \
   qt/moc_rpcconsole.cpp \
-  qt/moc_sendcoinsdialog.cpp \
-  qt/moc_sendcoinsentry.cpp \
-  qt/moc_signverifymessagedialog.cpp \
   qt/moc_splashscreen.cpp \
   qt/moc_trafficgraphwidget.cpp \
   qt/moc_transactiondesc.cpp \
-  qt/moc_transactiondescdialog.cpp \
   qt/moc_transactionfilterproxy.cpp \
   qt/moc_transactiontablemodel.cpp \
-  qt/moc_transactionview.cpp \
   qt/moc_utilitydialog.cpp \
-  qt/moc_walletframe.cpp \
   qt/moc_walletmodel.cpp \
-  qt/moc_walletview.cpp \
-  qt/moc_zSVRcontroldialog.cpp
+  qt/sovranocoin/moc_loadingdialog.cpp \
+  qt/moc_zsvrcontroldialog.cpp \
+  qt/sovranocoin/moc_pwidget.cpp \
+  qt/sovranocoin/moc_focuseddialog.cpp \
+  qt/sovranocoin/moc_snackbar.cpp \
+  qt/sovranocoin/moc_navmenuwidget.cpp \
+  qt/sovranocoin/moc_lockunlock.cpp \
+  qt/sovranocoin/moc_expandablebutton.cpp \
+  qt/sovranocoin/moc_furabstractlistitemdelegate.cpp \
+  qt/sovranocoin/moc_receivedialog.cpp \
+  qt/sovranocoin/moc_pfborderimage.cpp \
+  qt/sovranocoin/moc_topbar.cpp \
+  qt/sovranocoin/moc_txrow.cpp \
+  qt/sovranocoin/moc_dashboardwidget.cpp \
+  qt/sovranocoin/moc_addresslabelrow.cpp \
+  qt/sovranocoin/moc_contactdropdownrow.cpp \
+  qt/sovranocoin/moc_mninfodialog.cpp \
+  qt/sovranocoin/moc_optionbutton.cpp \
+  qt/sovranocoin/moc_coldstakingmodel.cpp \
+  qt/sovranocoin/moc_mnmodel.cpp \
+  qt/sovranocoin/moc_masternodewizarddialog.cpp \
+  qt/sovranocoin/moc_mnrow.cpp \
+  qt/sovranocoin/moc_masternodeswidget.cpp \
+  qt/sovranocoin/moc_myaddressrow.cpp \
+  qt/sovranocoin/moc_csrow.cpp \
+  qt/sovranocoin/moc_contactsdropdown.cpp \
+  qt/sovranocoin/moc_sendchangeaddressdialog.cpp \
+  qt/sovranocoin/moc_sendconfirmdialog.cpp \
+  qt/sovranocoin/moc_sendcustomfeedialog.cpp \
+  qt/sovranocoin/moc_sendchangeaddressdialog.cpp \
+  qt/sovranocoin/moc_sendmultirow.cpp \
+  qt/sovranocoin/moc_send.cpp \
+  qt/sovranocoin/moc_addnewaddressdialog.cpp \
+  qt/sovranocoin/moc_addnewcontactdialog.cpp \
+  qt/sovranocoin/moc_requestdialog.cpp \
+  qt/sovranocoin/moc_receivewidget.cpp \
+  qt/sovranocoin/moc_tooltipmenu.cpp \
+  qt/sovranocoin/moc_addresseswidget.cpp \
+  qt/sovranocoin/moc_defaultdialog.cpp \
+  qt/sovranocoin/moc_coldstakingwidget.cpp \
+  qt/sovranocoin/settings/moc_settingsbackupwallet.cpp \
+  qt/sovranocoin/settings/moc_settingsexportcsv.cpp \
+  qt/sovranocoin/settings/moc_settingsbittoolwidget.cpp \
+  qt/sovranocoin/settings/moc_settingsconsolewidget.cpp \
+  qt/sovranocoin/settings/moc_settingsdisplayoptionswidget.cpp \
+  qt/sovranocoin/settings/moc_settingsfaqwidget.cpp \
+  qt/sovranocoin/settings/moc_settingsinformationwidget.cpp \
+  qt/sovranocoin/settings/moc_settingsmainoptionswidget.cpp \
+  qt/sovranocoin/settings/moc_settingsmultisenddialog.cpp \
+  qt/sovranocoin/settings/moc_settingsmultisendwidget.cpp \
+  qt/sovranocoin/settings/moc_settingssignmessagewidgets.cpp \
+  qt/sovranocoin/settings/moc_settingswalletoptionswidget.cpp \
+  qt/sovranocoin/settings/moc_settingswalletrepairwidget.cpp \
+  qt/sovranocoin/settings/moc_settingswidget.cpp \
+  qt/sovranocoin/moc_welcomecontentwidget.cpp \
+  qt/sovranocoin/moc_splash.cpp
 
 BITCOIN_MM = \
   qt/macdockiconhandler.mm \
@@ -115,10 +165,9 @@ BITCOIN_MM = \
 
 QT_MOC = \
   qt/sovranocoin.moc \
-  qt/bitcoinamountfield.moc \
   qt/intro.moc \
-  qt/overviewpage.moc \
-  qt/rpcconsole.moc
+  qt/rpcconsole.moc \
+  qt/sovranocoin/settings/moc_settingsconsolewidget.cpp
 
 QT_QRC_CPP = qt/qrc_sovranocoin.cpp
 QT_QRC = qt/sovranocoin.qrc
@@ -133,132 +182,337 @@ BITCOIN_QT_H = \
   qt/addressbookpage.h \
   qt/addresstablemodel.h \
   qt/askpassphrasedialog.h \
-  qt/bip38tooldialog.h \
+  qt/bantablemodel.h \
   qt/bitcoinaddressvalidator.h \
-  qt/bitcoinamountfield.h \
-  qt/bitcoingui.h \
+  qt/sovranocoin/sovranocoingui.h \
   qt/bitcoinunits.h \
-  qt/blockexplorer.h \
   qt/clientmodel.h \
   qt/coincontroldialog.h \
   qt/coincontroltreewidget.h \
   qt/csvmodelwriter.h \
-  qt/obfuscationconfig.h \
   qt/editaddressdialog.h \
   qt/guiconstants.h \
   qt/guiutil.h \
   qt/intro.h \
   qt/macdockiconhandler.h \
   qt/macnotificationhandler.h \
-  qt/masternodelist.h \
-  qt/multisenddialog.h \
-  qt/multisigdialog.h\
   qt/networkstyle.h \
   qt/notificator.h \
   qt/openuridialog.h \
   qt/optionsdialog.h \
   qt/optionsmodel.h \
-  qt/overviewpage.h \
   qt/paymentrequestplus.h \
   qt/paymentserver.h \
   qt/peertablemodel.h \
   qt/platformstyle.h \
   qt/qvalidatedlineedit.h \
   qt/qvaluecombobox.h \
-  qt/receivecoinsdialog.h \
-  qt/privacydialog.h \
-  qt/receiverequestdialog.h \
   qt/recentrequeststablemodel.h \
   qt/rpcconsole.h \
-  qt/sendcoinsdialog.h \
-  qt/sendcoinsentry.h \
-  qt/signverifymessagedialog.h \
   qt/splashscreen.h \
   qt/trafficgraphwidget.h \
   qt/transactiondesc.h \
-  qt/transactiondescdialog.h \
   qt/transactionfilterproxy.h \
   qt/transactionrecord.h \
   qt/transactiontablemodel.h \
-  qt/transactionview.h \
   qt/utilitydialog.h \
-  qt/walletframe.h \
   qt/walletmodel.h \
   qt/walletmodeltransaction.h \
-  qt/walletview.h \
+  qt/sovranocoin/prunnable.h \
+  qt/sovranocoin/pfborderimage.h \
+  qt/sovranocoin/loadingdialog.h \
   qt/winshutdownmonitor.h \
-  qt/zSVRcontroldialog.h
+  qt/zsvrcontroldialog.h \
+  qt/sovranocoin/pwidget.h \
+  qt/sovranocoin/focuseddialog.h \
+  qt/sovranocoin/guitransactionsutils.h \
+  qt/sovranocoin/snackbar.h \
+  qt/sovranocoin/navmenuwidget.h \
+  qt/sovranocoin/lockunlock.h \
+  qt/sovranocoin/receivedialog.h \
+  qt/sovranocoin/furlistrow.h \
+  qt/sovranocoin/furabstractlistitemdelegate.h \
+  qt/sovranocoin/txviewholder.h \
+  qt/sovranocoin/qtutils.h \
+  qt/sovranocoin/expandablebutton.h \
+  qt/sovranocoin/topbar.h \
+  qt/sovranocoin/txrow.h \
+  qt/sovranocoin/addressholder.h \
+  qt/sovranocoin/addressfilterproxymodel.h \
+  qt/sovranocoin/dashboardwidget.h \
+  qt/sovranocoin/addresslabelrow.h \
+  qt/sovranocoin/contactdropdownrow.h \
+  qt/sovranocoin/mninfodialog.h \
+  qt/sovranocoin/optionbutton.h \
+  qt/sovranocoin/coldstakingmodel.h \
+  qt/sovranocoin/mnmodel.h \
+  qt/sovranocoin/masternodewizarddialog.h \
+  qt/sovranocoin/mnrow.h \
+  qt/sovranocoin/masternodeswidget.h \
+  qt/sovranocoin/myaddressrow.h \
+  qt/sovranocoin/csrow.h \
+  qt/sovranocoin/contactsdropdown.h \
+  qt/sovranocoin/sendchangeaddressdialog.h \
+  qt/sovranocoin/sendconfirmdialog.h \
+  qt/sovranocoin/sendcustomfeedialog.h \
+  qt/sovranocoin/sendchangeaddressdialog.h \
+  qt/sovranocoin/sendmultirow.h \
+  qt/sovranocoin/send.h \
+  qt/sovranocoin/addnewaddressdialog.h \
+  qt/sovranocoin/addnewcontactdialog.h \
+  qt/sovranocoin/requestdialog.h \
+  qt/sovranocoin/receivewidget.h \
+  qt/sovranocoin/tooltipmenu.h \
+  qt/sovranocoin/addresseswidget.h \
+  qt/sovranocoin/defaultdialog.h \
+  qt/sovranocoin/coldstakingwidget.h \
+  qt/sovranocoin/settings/settingsbackupwallet.h \
+  qt/sovranocoin/settings/settingsexportcsv.h \
+  qt/sovranocoin/settings/settingsbittoolwidget.h \
+  qt/sovranocoin/settings/settingsconsolewidget.h \
+  qt/sovranocoin/settings/settingsdisplayoptionswidget.h \
+  qt/sovranocoin/settings/settingsfaqwidget.h \
+  qt/sovranocoin/settings/settingsinformationwidget.h \
+  qt/sovranocoin/settings/settingsmainoptionswidget.h \
+  qt/sovranocoin/settings/settingsmultisenddialog.h \
+  qt/sovranocoin/settings/settingsmultisendwidget.h \
+  qt/sovranocoin/settings/settingssignmessagewidgets.h \
+  qt/sovranocoin/settings/settingswalletoptionswidget.h \
+  qt/sovranocoin/settings/settingswalletrepairwidget.h \
+  qt/sovranocoin/settings/settingswidget.h \
+  qt/sovranocoin/welcomecontentwidget.h \
+  qt/sovranocoin/splash.h
 
 RES_ICONS = \
-  qt/res/icons/add.png \
-  qt/res/icons/address-book.png \
   qt/res/icons/bitcoin.ico \
   qt/res/icons/bitcoin.png \
   qt/res/icons/bitcoin_testnet.ico \
   qt/res/icons/bitcoin_testnet.png \
-  qt/res/icons/browse.png \
-  qt/res/icons/clock1.png \
-  qt/res/icons/clock2.png \
-  qt/res/icons/clock3.png \
-  qt/res/icons/clock4.png \
-  qt/res/icons/clock5.png \
-  qt/res/icons/configure.png \
-  qt/res/icons/connect0_16.png \
-  qt/res/icons/connect1_16.png \
-  qt/res/icons/connect2_16.png \
-  qt/res/icons/connect3_16.png \
-  qt/res/icons/connect4_16.png \
-  qt/res/icons/debugwindow.png \
-  qt/res/icons/edit.png \
-  qt/res/icons/editcopy.png \
-  qt/res/icons/editpaste.png \
-  qt/res/icons/explorer.png \
-  qt/res/icons/export.png \
-  qt/res/icons/eye.png \
-  qt/res/icons/eye_minus.png \
-  qt/res/icons/eye_plus.png \
-  qt/res/icons/filesave.png \
-  qt/res/icons/history.png \
-  qt/res/icons/key.png \
+  qt/res/icons/bitcoin_regtest.png \
   qt/res/icons/lock_closed.png \
   qt/res/icons/lock_open.png \
-  qt/res/icons/masternodes.png \
   qt/res/icons/overview.png \
-  qt/res/icons/qrcode.png \
-  qt/res/icons/quit.png \
-  qt/res/icons/receive.png \
-  qt/res/icons/privacy.png \
-  qt/res/icons/remove.png \
-  qt/res/icons/send.png \
-  qt/res/icons/staking_active.png \
-  qt/res/icons/staking_inactive.png \
-  qt/res/icons/synced.png \
-  qt/res/icons/trade.png \
-  qt/res/icons/transaction0.png \
-  qt/res/icons/transaction2.png \
-  qt/res/icons/transaction_conflicted.png \
-  qt/res/icons/tx_inout.png \
-  qt/res/icons/tx_input.png \
-  qt/res/icons/tx_output.png \
-  qt/res/icons/tx_mined.png \
-  qt/res/icons/unit_sovranocoin.png \
-  qt/res/icons/unit_msovranocoin.png \
-  qt/res/icons/unit_usovranocoin.png \
-  qt/res/icons/unit_tsovranocoin.png \
-  qt/res/icons/unit_tmsovranocoin.png \
-  qt/res/icons/unit_tusovranocoin.png
+  qt/res/icons/ic-transaction-received.svg \
+  qt/res/icons/ic-transaction-mint.svg \
+  qt/res/icons/ic-transaction-sent.svg \
+  qt/res/icons/ic-transaction-staked.svg \
+  qt/sovranocoin/res/img/bg-dashboard-banner.png \
+  qt/sovranocoin/res/img/bg-multi-number-dark.svg \
+  qt/sovranocoin/res/img/ic-check-locked.svg \
+  qt/sovranocoin/res/img/ic-nav-address.svg \
+  qt/sovranocoin/res/img/ic-update.svg \
+  qt/sovranocoin/res/img/bg-multi-number.svg \
+  qt/sovranocoin/res/img/ic-check-mint-off.svg \
+  qt/sovranocoin/res/img/ic-nav-cold-staking.svg \
+  qt/sovranocoin/res/img/ic-nav-cold-staking-active.svg \
+  qt/sovranocoin/res/img/ic-nav-dashboard-active.svg \
+  qt/sovranocoin/res/img/ic-wallet-status-locked.svg \
+  qt/sovranocoin/res/img/bg-splash.svg \
+  qt/sovranocoin/res/img/bg-splash.png \
+  qt/sovranocoin/res/img/ic-check-mint.svg \
+  qt/sovranocoin/res/img/ic-nav-dashboard-hover.svg \
+  qt/sovranocoin/res/img/ic-wallet-status-staking.svg \
+  qt/sovranocoin/res/img/ic-check-peers-off.svg \
+  qt/sovranocoin/res/img/ic-nav-dashboard.svg \
+  qt/sovranocoin/res/img/ic-wallet-status-unlocked.svg \
+  qt/sovranocoin/res/img/ic-check-peers.svg \
+  qt/sovranocoin/res/img/ic-nav-master-active.svg \
+  qt/sovranocoin/res/img/ic-watch-password-white.svg \
+  qt/sovranocoin/res/img/bg-welcome-container.jpg \
+  qt/sovranocoin/res/img/bg-welcome-container.png \
+  qt/sovranocoin/res/img/bg-welcome-container.svg \
+  qt/sovranocoin/res/img/bg-welcome-container@2x.png \
+  qt/sovranocoin/res/img/bg-welcome-container@3x.png \
+  qt/sovranocoin/res/img/ic-check-staking-off.svg \
+  qt/sovranocoin/res/img/ic-nav-master-hover.svg \
+  qt/sovranocoin/res/img/ic-watch-password.svg \
+  qt/sovranocoin/res/img/bg-welcome.jpg \
+  qt/sovranocoin/res/img/bg-welcome.svg \
+  qt/sovranocoin/res/img/bg-welcome@2x.jpg \
+  qt/sovranocoin/res/img/bg-welcome@3x.jpg \
+  qt/sovranocoin/res/img/bg-welcome.png \
+  qt/sovranocoin/res/img/ic-check-staking.svg \
+  qt/sovranocoin/res/img/ic-nav-master.svg \
+  qt/sovranocoin/res/img/img-dashboard-banner.jpg \
+  qt/sovranocoin/res/img/btn-radio-active.svg \
+  qt/sovranocoin/res/img/ic-check-sync-off.svg \
+  qt/sovranocoin/res/img/ic-nav-privacy-active.svg \
+  qt/sovranocoin/res/img/img-empty-contacts.svg \
+  qt/sovranocoin/res/img/btn-radio-off.svg \
+  qt/sovranocoin/res/img/ic-check-sync.png \
+  qt/sovranocoin/res/img/ic-nav-privacy-hover.svg \
+  qt/sovranocoin/res/img/img-empty-dark-contacts.svg \
+  qt/sovranocoin/res/img/ic-contact-arrow-down.svg \
+  qt/sovranocoin/res/img/ic-contact-arrow-down-white.svg \
+  qt/sovranocoin/res/img/ic-check-sync.svg \
+  qt/sovranocoin/res/img/ic-check-faq.svg \
+  qt/sovranocoin/res/img/ic-nav-privacy.svg \
+  qt/sovranocoin/res/img/img-empty-dark-error.svg \
+  qt/sovranocoin/res/img/ic-add-label.svg \
+  qt/sovranocoin/res/img/ic-pending.svg \
+  qt/sovranocoin/res/img/ic-check-theme-dark.svg \
+  qt/sovranocoin/res/img/ic-nav-receive-active.svg \
+  qt/sovranocoin/res/img/img-empty-dark-masternode.svg \
+  qt/sovranocoin/res/img/ic-add-liliac.svg \
+  qt/sovranocoin/res/img/ic-check-theme-light.svg \
+  qt/sovranocoin/res/img/ic-nav-receive-hover.svg \
+  qt/sovranocoin/res/img/img-empty-dark-multisend.svg \
+  qt/sovranocoin/res/img/ic-add-purple.svg \
+  qt/sovranocoin/res/img/ic-check-white.svg \
+  qt/sovranocoin/res/img/ic-nav-receive.svg \
+  qt/sovranocoin/res/img/img-empty-dark-peers.svg \
+  qt/sovranocoin/res/img/ic-add.svg \
+  qt/sovranocoin/res/img/ic-check.svg \
+  qt/sovranocoin/res/img/ic-nav-send-active.svg \
+  qt/sovranocoin/res/img/img-empty-dark-staking-off.svg \
+  qt/sovranocoin/res/img/img-empty-dark-staking-on.svg \
+  qt/sovranocoin/res/img/ic-address-book-grey.svg \
+  qt/sovranocoin/res/img/ic-chevron-left.svg \
+  qt/sovranocoin/res/img/ic-nav-send-hover.svg \
+  qt/sovranocoin/res/img/img-empty-dark-transactions.svg \
+  qt/sovranocoin/res/img/ic-address-book-white.svg \
+  qt/sovranocoin/res/img/ic-chevron-right.svg \
+  qt/sovranocoin/res/img/ic-nav-send.svg \
+  qt/sovranocoin/res/img/img-empty-error.svg \
+  qt/sovranocoin/res/img/ic-address-book.svg \
+  qt/sovranocoin/res/img/ic-clear-liliac.svg \
+  qt/sovranocoin/res/img/ic-nav-settings-active.svg \
+  qt/sovranocoin/res/img/img-empty-masternode.svg \
+  qt/sovranocoin/res/img/ic-address-send-white.svg \
+  qt/sovranocoin/res/img/ic-clear-purple.svg \
+  qt/sovranocoin/res/img/ic-nav-settings-hover.svg \
+  qt/sovranocoin/res/img/img-empty-multisend.svg \
+  qt/sovranocoin/res/img/ic-address-send.svg \
+  qt/sovranocoin/res/img/ic-close-white.svg \
+  qt/sovranocoin/res/img/ic-nav-settings.svg \
+  qt/sovranocoin/res/img/img-empty-peers.svg \
+  qt/sovranocoin/res/img/img-empty-privacy.svg \
+  qt/sovranocoin/res/img/img-empty-privacy-dark.svg \
+  qt/sovranocoin/res/img/ic-arrow-drop-down-white.svg \
+  qt/sovranocoin/res/img/ic-close.svg \
+  qt/sovranocoin/res/img/ic-radio-liliac-on.svg \
+  qt/sovranocoin/res/img/img-empty-staking-off.svg \
+  qt/sovranocoin/res/img/ic-arrow-drop-down.svg \
+  qt/sovranocoin/res/img/ic-coin-svr.svg \
+  qt/sovranocoin/res/img/ic-receive-off.svg \
+  qt/sovranocoin/res/img/img-empty-staking-on.svg \
+  qt/sovranocoin/res/img/ic-arrow-drop-up-white.svg \
+  qt/sovranocoin/res/img/ic-coin-zsvr.png \
+  qt/sovranocoin/res/img/ic-receive-on.svg \
+  qt/sovranocoin/res/img/img-empty-transactions.svg \
+  qt/sovranocoin/res/img/ic-arrow-drop-up.svg \
+  qt/sovranocoin/res/img/ic-coin-zsvr.svg \
+  qt/sovranocoin/res/img/ic-received.svg \
+  qt/sovranocoin/res/img/img-logo-sovranocoin.png \
+  qt/sovranocoin/res/img/ic-arrow-drop-white-down.svg \
+  qt/sovranocoin/res/img/ic-combo-box.svg \
+  qt/sovranocoin/res/img/ic-send.svg \
+  qt/sovranocoin/res/img/img-logo-sovranocoin@2x.png \
+  qt/sovranocoin/res/img/ic-arrow-purple-down.svg \
+  qt/sovranocoin/res/img/ic-connect.svg \
+  qt/sovranocoin/res/img/ic-submenu-lock.svg \
+  qt/sovranocoin/res/img/img-logo-sovranocoin@3x.png \
+  qt/sovranocoin/res/img/img-logo-sovranocoin.svg \
+  qt/sovranocoin/res/img/ic-arrow-right-white.svg \
+  qt/sovranocoin/res/img/ic-arrow-left-white.svg \
+  qt/sovranocoin/res/img/ic-arrow-left.svg \
+  qt/sovranocoin/res/img/ic-copy-liliac.svg \
+  qt/sovranocoin/res/img/ic-submenu-staking.svg \
+  qt/sovranocoin/res/img/img-nav-logo-sovranocoin.png \
+  qt/sovranocoin/res/img/ic-arrow-right.svg \
+  qt/sovranocoin/res/img/ic-copy.svg \
+  qt/sovranocoin/res/img/ic-copy-big.svg \
+  qt/sovranocoin/res/img/ic-copy-big-white.svg \
+  qt/sovranocoin/res/img/ic-submenu-unlock.svg \
+  qt/sovranocoin/res/img/img-nav-logo.png \
+  qt/sovranocoin/res/img/ic-arrow-white-left.svg \
+  qt/sovranocoin/res/img/ic-exit.svg \
+  qt/sovranocoin/res/img/ic-switch-liliac-on.svg \
+  qt/sovranocoin/res/img/img-nav-logo.svg \
+  qt/sovranocoin/res/img/ic-arrow-white-right.svg \
+  qt/sovranocoin/res/img/ic-expand.svg \
+  qt/sovranocoin/res/img/ic-switch-off.svg \
+  qt/sovranocoin/res/img/img-qr-test-big.png \
+  qt/sovranocoin/res/img/ic-check-active.svg \
+  qt/sovranocoin/res/img/ic-folder.svg \
+  qt/sovranocoin/res/img/ic-switch-on.svg \
+  qt/sovranocoin/res/img/img-qr-test.png \
+  qt/sovranocoin/res/img/ic-check-box.svg \
+  qt/sovranocoin/res/img/ic-check-box-dark-active.svg \
+  qt/sovranocoin/res/img/ic-check-box-indeterminate.svg \
+  qt/sovranocoin/res/img/ic-check-box-liliac-indeterminate.svg \
+  qt/sovranocoin/res/img/ic-label-liliac.svg \
+  qt/sovranocoin/res/img/ic-transaction-warning.svg \
+  qt/sovranocoin/res/img/ic-transaction-mint.svg \
+  qt/sovranocoin/res/img/ic-transaction-mint-inactive.svg \
+  qt/sovranocoin/res/img/ic-check-cold-staking.svg \
+  qt/sovranocoin/res/img/ic-check-cold-staking-off.svg \
+  qt/sovranocoin/res/img/ic-check-cold-staking-enabled.svg \
+  qt/sovranocoin/res/img/dark/ic-transaction-cs-contract.svg \
+  qt/sovranocoin/res/img/dark/ic-transaction-cs-contract-inactive.svg \
+  qt/sovranocoin/res/img/img-qr.svg \
+  qt/sovranocoin/res/img/ic-check-connect-off.svg \
+  qt/sovranocoin/res/img/ic-check-tor-off.svg \
+  qt/sovranocoin/res/img/ic-check-tor.svg \
+  qt/sovranocoin/res/img/ic-label.svg \
+  qt/sovranocoin/res/img/ic-transaction-received.svg \
+  qt/sovranocoin/res/img/dark/ic-transaction-received.svg \
+  qt/sovranocoin/res/img/dark/ic-transaction-warning.svg \
+  qt/sovranocoin/res/img/dark/ic-transaction-mint.svg \
+  qt/sovranocoin/res/img/dark/ic-transaction-mint-inactive.svg \
+  qt/sovranocoin/res/img/ic-transaction-received-inactive.svg \
+  qt/sovranocoin/res/img/dark/ic-transaction-received-inactive.svg \
+  qt/sovranocoin/res/img/img-welcome-step1.png \
+  qt/sovranocoin/res/img/ic-check-connect.svg \
+  qt/sovranocoin/res/img/ic-menu-hover.svg \
+  qt/sovranocoin/res/img/ic-transaction-sent.svg \
+  qt/sovranocoin/res/img/ic-transaction-sent-inactive.svg \
+  qt/sovranocoin/res/img/dark/ic-transaction-sent.svg \
+  qt/sovranocoin/res/img/dark/ic-transaction-sent-inactive.svg \
+  qt/sovranocoin/res/img/img-welcome-step2.png \
+  qt/sovranocoin/res/img/ic-check-dark.svg \
+  qt/sovranocoin/res/img/ic-mint.svg \
+  qt/sovranocoin/res/img/ic-transaction-staked.svg \
+  qt/sovranocoin/res/img/ic-transaction-staked-inactive.svg \
+  qt/sovranocoin/res/img/dark/ic-transaction-staked.svg \
+  qt/sovranocoin/res/img/dark/ic-transaction-staked-inactive.svg \
+  qt/sovranocoin/res/img/img-welcome-step3.png \
+  qt/sovranocoin/res/img/ic-check-liliac-on.svg \
+  qt/sovranocoin/res/img/ic-nav-address-active.svg \
+  qt/sovranocoin/res/img/ic-unlock-staking.svg \
+  qt/sovranocoin/res/img/img-welcome-step4.png \
+  qt/sovranocoin/res/img/ic-check-locked-off.svg \
+  qt/sovranocoin/res/img/ic-nav-address-hover.svg \
+  qt/sovranocoin/res/img/ic-update-liliac.svg \
+  qt/sovranocoin/res/img/ic-arrow-drop-down-purple.svg \
+  qt/sovranocoin/res/img/ic-arrow-drop-up-purple.svg \
+  qt/sovranocoin/res/img/ic-check-liliac-indeterminate.svg \
+  qt/sovranocoin/res/img/ic-check-box-liliac-indeterminate.svg \
+  qt/sovranocoin/res/img/ic-transaction-stake-delegated.svg \
+  qt/sovranocoin/res/img/ic-transaction-stake-delegated-inactive.svg \
+  qt/sovranocoin/res/img/ic-transaction-stake-hot.svg \
+  qt/sovranocoin/res/img/ic-transaction-stake-hot-inactive.svg \
+  qt/sovranocoin/res/img/dark/ic-transaction-stake-hot.svg \
+  qt/sovranocoin/res/img/dark/ic-transaction-stake-hot-inactive.svg \
+  qt/sovranocoin/res/img/dark/ic-transaction-stake-delegated.svg \
+  qt/sovranocoin/res/img/dark/ic-transaction-stake-delegated-inactive.svg \
+  qt/sovranocoin/res/img/ic-transaction-cs-contract.svg \
+  qt/sovranocoin/res/img/ic-transaction-cs-contract-inactive.svg \
+  qt/sovranocoin/res/img/ic-check-box-indeterminate.svg \
+  qt/sovranocoin/res/img/ani-loading-dark.gif \
+  qt/sovranocoin/res/img/ani-loading.gif
 
-BITCOIN_QT_CPP = \
+
+
+BITCOIN_QT_BASE_CPP = \
+  qt/bantablemodel.cpp \
   qt/bitcoinaddressvalidator.cpp \
-  qt/bitcoinamountfield.cpp \
-  qt/bitcoingui.cpp \
+  qt/sovranocoin/sovranocoingui.cpp \
   qt/bitcoinunits.cpp \
-  qt/blockexplorer.cpp \
   qt/clientmodel.cpp \
   qt/csvmodelwriter.cpp \
   qt/guiutil.cpp \
   qt/intro.cpp \
-  qt/masternodelist.cpp \
   qt/networkstyle.cpp \
   qt/notificator.cpp \
   qt/optionsdialog.cpp \
@@ -270,78 +524,120 @@ BITCOIN_QT_CPP = \
   qt/rpcconsole.cpp \
   qt/splashscreen.cpp \
   qt/trafficgraphwidget.cpp \
-  qt/utilitydialog.cpp \
-  qt/winshutdownmonitor.cpp
+  qt/utilitydialog.cpp
 
-if ENABLE_WALLET
-BITCOIN_QT_CPP += \
+BITCOIN_QT_WINDOWS_CPP = qt/winshutdownmonitor.cpp
+
+BITCOIN_QT_WALLET_CPP = \
   qt/addressbookpage.cpp \
   qt/addresstablemodel.cpp \
   qt/askpassphrasedialog.cpp \
-  qt/bip38tooldialog.cpp \
-  qt/blockexplorer.cpp \
   qt/coincontroldialog.cpp \
   qt/coincontroltreewidget.cpp \
-  qt/obfuscationconfig.cpp \
   qt/editaddressdialog.cpp \
-  qt/masternodelist.cpp \
-  qt/multisenddialog.cpp \
-  qt/multisigdialog.cpp\
   qt/openuridialog.cpp \
-  qt/overviewpage.cpp \
   qt/paymentrequestplus.cpp \
   qt/paymentserver.cpp \
-  qt/receivecoinsdialog.cpp \
-  qt/privacydialog.cpp \
-  qt/receiverequestdialog.cpp \
   qt/recentrequeststablemodel.cpp \
-  qt/sendcoinsdialog.cpp \
-  qt/sendcoinsentry.cpp \
-  qt/signverifymessagedialog.cpp \
   qt/transactiondesc.cpp \
-  qt/transactiondescdialog.cpp \
   qt/transactionfilterproxy.cpp \
   qt/transactionrecord.cpp \
   qt/transactiontablemodel.cpp \
-  qt/transactionview.cpp \
-  qt/walletframe.cpp \
   qt/walletmodel.cpp \
   qt/walletmodeltransaction.cpp \
-  qt/walletview.cpp \
-  qt/zSVRcontroldialog.cpp
+  qt/sovranocoin/loadingdialog.cpp \
+  qt/zsvrcontroldialog.cpp \
+  qt/sovranocoin/pwidget.cpp \
+  qt/sovranocoin/focuseddialog.cpp \
+  qt/sovranocoin/guitransactionsutils.cpp \
+  qt/sovranocoin/snackbar.cpp \
+  qt/sovranocoin/navmenuwidget.cpp \
+  qt/sovranocoin/lockunlock.cpp \
+  qt/sovranocoin/receivedialog.cpp \
+  qt/sovranocoin/furabstractlistitemdelegate.cpp \
+  qt/sovranocoin/txviewholder.cpp \
+  qt/sovranocoin/qtutils.cpp \
+  qt/sovranocoin/expandablebutton.cpp \
+  qt/sovranocoin/topbar.cpp \
+  qt/sovranocoin/txrow.cpp \
+  qt/sovranocoin/addressholder.cpp \
+  qt/sovranocoin/addressfilterproxymodel.cpp \
+  qt/sovranocoin/dashboardwidget.cpp \
+  qt/sovranocoin/addresslabelrow.cpp \
+  qt/sovranocoin/contactdropdownrow.cpp \
+  qt/sovranocoin/contactsdropdown.cpp \
+  qt/sovranocoin/optionbutton.cpp \
+  qt/sovranocoin/mninfodialog.cpp \
+  qt/sovranocoin/coldstakingmodel.cpp \
+  qt/sovranocoin/mnmodel.cpp \
+  qt/sovranocoin/masternodewizarddialog.cpp \
+  qt/sovranocoin/mnrow.cpp \
+  qt/sovranocoin/masternodeswidget.cpp \
+  qt/sovranocoin/myaddressrow.cpp \
+  qt/sovranocoin/csrow.cpp \
+  qt/sovranocoin/sendchangeaddressdialog.cpp \
+  qt/sovranocoin/sendconfirmdialog.cpp \
+  qt/sovranocoin/sendcustomfeedialog.cpp \
+  qt/sovranocoin/sendchangeaddressdialog.cpp \
+  qt/sovranocoin/sendmultirow.cpp \
+  qt/sovranocoin/send.cpp \
+  qt/sovranocoin/addnewaddressdialog.cpp \
+  qt/sovranocoin/addnewcontactdialog.cpp \
+  qt/sovranocoin/requestdialog.cpp \
+  qt/sovranocoin/receivewidget.cpp \
+  qt/sovranocoin/tooltipmenu.cpp \
+  qt/sovranocoin/addresseswidget.cpp \
+  qt/sovranocoin/defaultdialog.cpp \
+  qt/sovranocoin/coldstakingwidget.cpp \
+  qt/sovranocoin/settings/settingsbackupwallet.cpp \
+  qt/sovranocoin/settings/settingsexportcsv.cpp \
+  qt/sovranocoin/settings/settingsbittoolwidget.cpp \
+  qt/sovranocoin/settings/settingsconsolewidget.cpp \
+  qt/sovranocoin/settings/settingsdisplayoptionswidget.cpp \
+  qt/sovranocoin/settings/settingsfaqwidget.cpp \
+  qt/sovranocoin/settings/settingsinformationwidget.cpp \
+  qt/sovranocoin/settings/settingsmainoptionswidget.cpp \
+  qt/sovranocoin/settings/settingsmultisenddialog.cpp \
+  qt/sovranocoin/settings/settingsmultisendwidget.cpp \
+  qt/sovranocoin/settings/settingssignmessagewidgets.cpp \
+  qt/sovranocoin/settings/settingswalletoptionswidget.cpp \
+  qt/sovranocoin/settings/settingswalletrepairwidget.cpp \
+  qt/sovranocoin/settings/settingswidget.cpp \
+  qt/sovranocoin/welcomecontentwidget.cpp \
+  qt/sovranocoin/splash.cpp
 
+
+BITCOIN_QT_CPP = $(BITCOIN_QT_BASE_CPP)
+if TARGET_WINDOWS
+BITCOIN_QT_CPP += $(BITCOIN_QT_WINDOWS_CPP)
+endif
+if ENABLE_WALLET
+BITCOIN_QT_CPP += $(BITCOIN_QT_WALLET_CPP)
 endif
 
 RES_IMAGES = \
   qt/res/images/about.png \
   qt/res/images/splash.png \
   qt/res/images/splash_testnet.png \
-  qt/res/images/sovranocoin_logo_horizontal.png \
-  qt/res/images/downArrow.png \
-  qt/res/images/downArrow_small.png \
-  qt/res/images/upArrow_small.png \
-  qt/res/images/leftArrow_small.png \
-  qt/res/images/rightArrow_small.png \
-  qt/res/images/qtreeview_selected.png \
-  qt/res/images/walletFrame.png \
-  qt/res/images/walletFrame_bg.png \
-  qt/res/images/walletFrame_bg.png
+  qt/res/images/splash_regtest.png
 
 RES_CSS = \
-  qt/res/css/default.css
-
-RES_MOVIES = $(wildcard $(srcdir)/qt/res/movies/spinner-*.png)
+  qt/res/css/default.css \
+  qt/sovranocoin/res/css/style_dark.css \
+  qt/sovranocoin/res/css/style_light.css
 
 BITCOIN_RC = qt/res/sovranocoin-qt-res.rc
 
 BITCOIN_QT_INCLUDES = -I$(builddir)/qt -I$(srcdir)/qt -I$(srcdir)/qt/forms \
-  -I$(builddir)/qt/forms
+  -I$(builddir)/qt/forms -DQT_NO_KEYWORDS
 
-qt_libbitcoinqt_a_CPPFLAGS = $(BITCOIN_INCLUDES) $(BITCOIN_QT_INCLUDES) \
-  $(QT_INCLUDES) $(QT_DBUS_INCLUDES) $(PROTOBUF_CFLAGS) $(QR_CFLAGS)
+qt_libbitcoinqt_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(BITCOIN_QT_INCLUDES) \
+  $(QT_INCLUDES) $(QT_DBUS_INCLUDES) $(PROTOBUF_CFLAGS) $(QR_CFLAGS) $(SVG_CFLAGS) $(CHARTS_CFLAGS)
+qt_libbitcoinqt_a_CXXFLAGS = $(AM_CXXFLAGS) $(QT_PIE_FLAGS)
+qt_libbitcoinqt_a_OBJCXXFLAGS = $(AM_OBJCXXFLAGS) $(QT_PIE_FLAGS)
 
 qt_libbitcoinqt_a_SOURCES = $(BITCOIN_QT_CPP) $(BITCOIN_QT_H) $(QT_FORMS_UI) \
-  $(QT_QRC) $(QT_QRC_LOCALE) $(QT_TS) $(PROTOBUF_PROTO) $(RES_ICONS) $(RES_IMAGES) $(RES_CSS) $(RES_MOVIES)
+  $(QT_QRC) $(QT_QRC_LOCALE) $(QT_TS) $(PROTOBUF_PROTO) $(RES_ICONS) $(RES_IMAGES) $(RES_CSS)
 
 nodist_qt_libbitcoinqt_a_SOURCES = $(QT_MOC_CPP) $(QT_MOC) $(PROTOBUF_CC) \
   $(PROTOBUF_H) $(QT_QRC_CPP) $(QT_QRC_LOCALE_CPP)
@@ -360,8 +656,9 @@ $(QT_MOC): $(PROTOBUF_H)
 $(QT_MOC_CPP): $(PROTOBUF_H)
 
 # sovranocoin-qt binary #
-qt_sovranocoin_qt_CPPFLAGS = $(BITCOIN_INCLUDES) $(BITCOIN_QT_INCLUDES) \
-  $(QT_INCLUDES) $(PROTOBUF_CFLAGS) $(QR_CFLAGS)
+qt_sovranocoin_qt_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(BITCOIN_QT_INCLUDES) \
+  $(QT_INCLUDES) $(PROTOBUF_CFLAGS) $(QR_CFLAGS) $(SVG_CFLAGS) $(CHARTS_CFLAGS)
+qt_sovranocoin_qt_CXXFLAGS = $(AM_CXXFLAGS) $(QT_PIE_FLAGS)
 
 qt_sovranocoin_qt_SOURCES = qt/sovranocoin.cpp
 if TARGET_DARWIN
@@ -372,42 +669,43 @@ if TARGET_WINDOWS
 endif
 qt_sovranocoin_qt_LDADD = qt/libbitcoinqt.a $(LIBBITCOIN_SERVER)
 if ENABLE_WALLET
-qt_sovranocoin_qt_LDADD += $(LIBBITCOIN_WALLET)
+qt_sovranocoin_qt_LDADD += $(LIBBITCOIN_UTIL) $(LIBBITCOIN_WALLET)
 endif
 if ENABLE_ZMQ
 qt_sovranocoin_qt_LDADD += $(LIBBITCOIN_ZMQ) $(ZMQ_LIBS)
 endif
-qt_sovranocoin_qt_LDADD += $(LIBBITCOIN_CLI) $(LIBBITCOIN_COMMON) $(LIBBITCOIN_UTIL) $(LIBBITCOIN_CRYPTO) $(LIBBITCOIN_UNIVALUE) $(LIBBITCOIN_ZEROCOIN) $(LIBLEVELDB) $(LIBMEMENV) \
-  $(BOOST_LIBS) $(QT_LIBS) $(QT_DBUS_LIBS) $(QR_LIBS) $(PROTOBUF_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(LIBSECP256K1) \
+qt_sovranocoin_qt_LDADD += $(LIBBITCOIN_CLI) $(LIBBITCOIN_COMMON) $(LIBBITCOIN_UTIL) $(LIBBITCOIN_CRYPTO) $(LIBUNIVALUE) $(LIBBITCOIN_ZEROCOIN) $(LIBLEVELDB) $(LIBLEVELDB_SSE42) $(LIBMEMENV) \
+  $(BOOST_LIBS) $(QT_LIBS) $(QT_DBUS_LIBS) $(QR_LIBS) $(PROTOBUF_LIBS) $(SVG_LIBS) $(CHARTS_LIBS) $(BDB_LIBS) $(SSL_LIBS) $(CRYPTO_LIBS) $(MINIUPNPC_LIBS) $(LIBSECP256K1) \
   $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS)
 qt_sovranocoin_qt_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(QT_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
-qt_sovranocoin_qt_LIBTOOLFLAGS = --tag CXX
+qt_sovranocoin_qt_LIBTOOLFLAGS = $(AM_LIBTOOLFLAGS) --tag CXX
 
 #locale/foo.ts -> locale/foo.qm
 QT_QM=$(QT_TS:.ts=.qm)
 
-.SECONDARY: $(QT_QM)
+SECONDARY: $(QT_QM)
 
-qt/sovranocoinstrings.cpp: $(libbitcoin_server_a_SOURCES) $(libbitcoin_wallet_a_SOURCES) $(libbitcoin_common_a_SOURCES)
+$(srcdir)/qt/sovranocoinstrings.cpp: $(libbitcoin_server_a_SOURCES) $(libbitcoin_wallet_a_SOURCES) $(libbitcoin_common_a_SOURCES) $(libbitcoin_zmq_a_SOURCES) $(libbitcoin_util_a_SOURCES)
 	@test -n $(XGETTEXT) || echo "xgettext is required for updating translations"
-	$(AM_V_GEN) cd $(srcdir); XGETTEXT=$(XGETTEXT) $(PYTHON) ../share/qt/extract_strings_qt.py $^
+	$(AM_V_GEN) cd $(srcdir); XGETTEXT=$(XGETTEXT) PACKAGE_NAME="$(PACKAGE_NAME)" $(PYTHON) ../share/qt/extract_strings_qt.py $^
 
-translate: qt/sovranocoinstrings.cpp $(QT_FORMS_UI) $(QT_FORMS_UI) $(BITCOIN_QT_CPP) $(BITCOIN_QT_H) $(BITCOIN_MM)
+translate: $(srcdir)/qt/sovranocoinstrings.cpp $(QT_FORMS_UI) $(QT_FORMS_UI) $(BITCOIN_QT_BASE_CPP) qt/sovranocoin.cpp $(BITCOIN_QT_WINDOWS_CPP) $(BITCOIN_QT_WALLET_CPP) $(BITCOIN_QT_H) $(BITCOIN_MM)
 	@test -n $(LUPDATE) || echo "lupdate is required for updating translations"
-	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(LUPDATE) $^ -locations relative -no-obsolete -ts qt/locale/sovranocoin_en.ts
+	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(LUPDATE) $^ -locations relative -no-obsolete -ts $(srcdir)/qt/locale/sovranocoin_en.ts
 
 $(QT_QRC_LOCALE_CPP): $(QT_QRC_LOCALE) $(QT_QM)
 	@test -f $(RCC)
-	@test -f $(@D)/$(<F) || cp -f $< $(@D)
-	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(RCC) -name sovranocoin_locale $(@D)/$(<F) | \
+	@cp -f $< $(@D)/temp_$(<F)
+	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(RCC) -name sovranocoin_locale $(@D)/temp_$(<F) | \
 	  $(SED) -e '/^\*\*.*Created:/d' -e '/^\*\*.*by:/d' > $@
+	@rm $(@D)/temp_$(<F)
 
-$(QT_QRC_CPP): $(QT_QRC) $(QT_FORMS_H) $(RES_ICONS) $(RES_IMAGES) $(RES_CSS) $(RES_MOVIES) $(PROTOBUF_H)
+$(QT_QRC_CPP): $(QT_QRC) $(QT_FORMS_H) $(RES_ICONS) $(RES_IMAGES) $(RES_CSS) $(PROTOBUF_H)
 	@test -f $(RCC)
 	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(RCC) -name sovranocoin $< | \
 	  $(SED) -e '/^\*\*.*Created:/d' -e '/^\*\*.*by:/d' > $@
 
-CLEAN_QT = $(nodist_qt_libbitcoinqt_a_SOURCES) $(QT_QM) $(QT_FORMS_H) qt/*.gcda qt/*.gcno
+CLEAN_QT = $(nodist_qt_libbitcoinqt_a_SOURCES) $(QT_QM) $(QT_FORMS_H) qt/*.gcda qt/*.gcno qt/temp_sovranocoin_locale.qrc
 
 CLEANFILES += $(CLEAN_QT)
 
@@ -422,11 +720,11 @@ ui_%.h: %.ui
 	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(UIC) -o $@ $< || (echo "Error creating $@"; false)
 
 %.moc: %.cpp
-	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(MOC) $(QT_INCLUDES) $(MOC_DEFS) $< | \
+	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(MOC) $(DEFAULT_INCLUDES) $(QT_INCLUDES) $(MOC_DEFS) $< | \
 	  $(SED) -e '/^\*\*.*Created:/d' -e '/^\*\*.*by:/d' > $@
 
 moc_%.cpp: %.h
-	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(MOC) $(QT_INCLUDES) $(MOC_DEFS) $< | \
+	$(AM_V_GEN) QT_SELECT=$(QT_SELECT) $(MOC) $(DEFAULT_INCLUDES) $(QT_INCLUDES) $(MOC_DEFS) $< | \
 	  $(SED) -e '/^\*\*.*Created:/d' -e '/^\*\*.*by:/d' > $@
 
 %.qm: %.ts

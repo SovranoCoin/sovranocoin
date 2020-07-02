@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PIVX_INVALID_OUTPOINTS_JSON_H
-#define PIVX_INVALID_OUTPOINTS_JSON_H
+#ifndef SOVRANOCOIN_INVALID_OUTPOINTS_JSON_H
+#define SOVRANOCOIN_INVALID_OUTPOINTS_JSON_H
 #include <string>
 
 std::string LoadInvalidOutPoints()

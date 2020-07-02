@@ -1,48 +1,79 @@
-// Copyright (c) 2017 The PIVX developers
-// Copyright (c) 2017-2018 The SovranoCoin developers
+// Copyright (c) 2017-2020 The PIVX developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "zSVRcontroldialog.h"
-#include "ui_zSVRcontroldialog.h"
+#include "zsvrcontroldialog.h"
+#include "ui_zsvrcontroldialog.h"
 
 #include "main.h"
 #include "walletmodel.h"
+#include "guiutil.h"
 
-using namespace std;
 
-std::list<std::string> ZSVRControlDialog::listSelectedMints;
-std::list<CZerocoinMint> ZSVRControlDialog::listMints;
+std::set<std::string> ZSvrControlDialog::setSelectedMints;
+std::set<CMintMeta> ZSvrControlDialog::setMints;
 
-ZSVRControlDialog::ZSVRControlDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::ZSVRControlDialog),
+bool CZSvrControlWidgetItem::operator<(const QTreeWidgetItem &other) const {
+    int column = treeWidget()->sortColumn();
+    if (column == ZSvrControlDialog::COLUMN_DENOMINATION || column == ZSvrControlDialog::COLUMN_VERSION || column == ZSvrControlDialog::COLUMN_CONFIRMATIONS)
+        return data(column, Qt::UserRole).toLongLong() < other.data(column, Qt::UserRole).toLongLong();
+    return QTreeWidgetItem::operator<(other);
+}
+
+
+ZSvrControlDialog::ZSvrControlDialog(QWidget *parent) :
+    QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint),
+    ui(new Ui::ZSvrControlDialog),
     model(0)
 {
     ui->setupUi(this);
-    listMints.clear();
-    privacyDialog = (PrivacyDialog*)parent;
+    setMints.clear();
+
+    /* Open CSS when configured */
+    this->setStyleSheet(GUIUtil::loadStyleSheet());
+
+    ui->frame->setProperty("cssClass", "container-dialog");
+
+    // Title
+    ui->labelTitle->setText(tr("Select zSVR Denominations to Spend"));
+    ui->labelTitle->setProperty("cssClass", "text-title-dialog");
+
+
+    // Label Style
+    ui->labelZSvr->setProperty("cssClass", "text-main-purple");
+    ui->labelZSvr_int->setProperty("cssClass", "text-main-purple");
+    ui->labelQuantity->setProperty("cssClass", "text-main-purple");
+    ui->labelQuantity_int->setProperty("cssClass", "text-main-purple");
+
+    ui->layoutAmount->setProperty("cssClass", "container-border-purple");
+    ui->layoutQuantity->setProperty("cssClass", "container-border-purple");
+
+    // Buttons
+
+    ui->btnEsc->setText("");
+    ui->btnEsc->setProperty("cssClass", "ic-close");
+    ui->pushButtonAll->setProperty("cssClass", "btn-check");
 
     // click on checkbox
-    connect(ui->treeWidget, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(updateSelection(QTreeWidgetItem*, int)));
-
+    connect(ui->treeWidget, &QTreeWidget::itemChanged, this, &ZSvrControlDialog::updateSelection);
     // push select/deselect all button
-    connect(ui->pushButtonAll, SIGNAL(clicked()), this, SLOT(ButtonAllClicked()));
+    connect(ui->pushButtonAll, &QPushButton::clicked, this, &ZSvrControlDialog::ButtonAllClicked);
 }
 
-ZSVRControlDialog::~ZSVRControlDialog()
+ZSvrControlDialog::~ZSvrControlDialog()
 {
     delete ui;
 }
 
-void ZSVRControlDialog::setModel(WalletModel *model)
+void ZSvrControlDialog::setModel(WalletModel *model)
 {
     this->model = model;
     updateList();
 }
 
+
 //Update the tree widget
-void ZSVRControlDialog::updateList()
+void ZSvrControlDialog::updateList()
 {
     // need to prevent the slot from being called each time something is changed
     ui->treeWidget->blockSignals(true);
@@ -50,9 +81,9 @@ void ZSVRControlDialog::updateList()
 
     // add a top level item for each denomination
     QFlags<Qt::ItemFlag> flgTristate = Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsTristate;
-    map<libzerocoin::CoinDenomination, int> mapDenomPosition;
+    std::map<libzerocoin::CoinDenomination, int> mapDenomPosition;
     for (auto denom : libzerocoin::zerocoinDenomList) {
-        QTreeWidgetItem* itemDenom(new QTreeWidgetItem);
+        CZSvrControlWidgetItem* itemDenom(new CZSvrControlWidgetItem);
         ui->treeWidget->addTopLevelItem(itemDenom);
 
         //keep track of where this is positioned in tree widget
@@ -60,68 +91,70 @@ void ZSVRControlDialog::updateList()
 
         itemDenom->setFlags(flgTristate);
         itemDenom->setText(COLUMN_DENOMINATION, QString::number(denom));
+        itemDenom->setData(COLUMN_DENOMINATION, Qt::UserRole, QVariant((qlonglong) denom));
     }
 
-    // select all unused coins - including not mature. Update status of coins too.
-    std::list<CZerocoinMint> list;
-    model->listZerocoinMints(list, true, false, true);
-    this->listMints = list;
+    // select all unused coins - including not mature and mismatching seed. Update status of coins too.
+    std::set<CMintMeta> set;
+    model->listZerocoinMints(set, true, false, true, true);
+    this->setMints = set;
 
     //populate rows with mint info
     int nBestHeight = chainActive.Height();
-    for(const CZerocoinMint mint : listMints) {
+    for (const CMintMeta& mint : setMints) {
         // assign this mint to the correct denomination in the tree view
-        libzerocoin::CoinDenomination denom = mint.GetDenomination();
-        QTreeWidgetItem *itemMint = new QTreeWidgetItem(ui->treeWidget->topLevelItem(mapDenomPosition.at(denom)));
+        libzerocoin::CoinDenomination denom = mint.denom;
+        CZSvrControlWidgetItem *itemMint = new CZSvrControlWidgetItem(ui->treeWidget->topLevelItem(mapDenomPosition.at(denom)));
 
         // if the mint is already selected, then it needs to have the checkbox checked
-        std::string strPubCoin = mint.GetValue().GetHex();
-        itemMint->setCheckState(COLUMN_CHECKBOX, Qt::Unchecked);
-        if(count(listSelectedMints.begin(), listSelectedMints.end(), strPubCoin))
+        std::string strPubCoinHash = mint.hashPubcoin.GetHex();
+
+        if (setSelectedMints.count(strPubCoinHash))
             itemMint->setCheckState(COLUMN_CHECKBOX, Qt::Checked);
+        else
+            itemMint->setCheckState(COLUMN_CHECKBOX, Qt::Unchecked);
 
-        itemMint->setText(COLUMN_DENOMINATION, QString::number(mint.GetDenomination()));
-        itemMint->setText(COLUMN_PUBCOIN, QString::fromStdString(strPubCoin));
+        itemMint->setText(COLUMN_DENOMINATION, QString::number(mint.denom));
+        itemMint->setData(COLUMN_DENOMINATION, Qt::UserRole, QVariant((qlonglong) denom));
+        itemMint->setText(COLUMN_PUBCOIN, QString::fromStdString(strPubCoinHash));
+        itemMint->setText(COLUMN_VERSION, QString::number(mint.nVersion));
+        itemMint->setData(COLUMN_VERSION, Qt::UserRole, QVariant((qlonglong) mint.nVersion));
 
-        int nConfirmations = (mint.GetHeight() ? nBestHeight - mint.GetHeight() : 0);
+        int nConfirmations = (mint.nHeight ? nBestHeight - mint.nHeight : 0);
         if (nConfirmations < 0) {
             // Sanity check
             nConfirmations = 0;
         }
 
         itemMint->setText(COLUMN_CONFIRMATIONS, QString::number(nConfirmations));
+        itemMint->setData(COLUMN_CONFIRMATIONS, Qt::UserRole, QVariant((qlonglong) nConfirmations));
 
-        // check to make sure there are at least 3 other mints added to the accumulators after this
-        int nMintsAdded = 0;
-        if(mint.GetHeight() != 0 && mint.GetHeight() < nBestHeight - 2) {
-            CBlockIndex *pindex = chainActive[mint.GetHeight() + 1];
-            
-            int nHeight2CheckpointsDeep = nBestHeight - (nBestHeight % 10) - 20;
-            while (pindex->nHeight < nHeight2CheckpointsDeep) { // 20 just to make sure that its at least 2 checkpoints from the top block
-                nMintsAdded += count(pindex->vMintDenominationsInBlock.begin(), pindex->vMintDenominationsInBlock.end(), mint.GetDenomination());
-                if(nMintsAdded >= Params().Zerocoin_RequiredAccumulation())
-                    break;
-                pindex = chainActive[pindex->nHeight + 1];
-            }
-        }
+        // check for maturity
+        // Always mature, public spends doesn't require any new accumulation.
+        bool isMature = true;
+        //if (mapMaturityHeight.count(mint.denom))
+        //    isMature = mint.nHeight < mapMaturityHeight.at(denom);
 
         // disable selecting this mint if it is not spendable - also display a reason why
-        bool fSpendable = nMintsAdded >= Params().Zerocoin_RequiredAccumulation() && nConfirmations >= Params().Zerocoin_MintRequiredConfirmations();
+        const int nRequiredConfs = Params().GetConsensus().ZC_MinMintConfirmations;
+        bool fSpendable = isMature && nConfirmations >= nRequiredConfs && mint.isSeedCorrect;
         if(!fSpendable) {
             itemMint->setDisabled(true);
             itemMint->setCheckState(COLUMN_CHECKBOX, Qt::Unchecked);
 
             //if this mint is in the selection list, then remove it
-            auto it = std::find(listSelectedMints.begin(), listSelectedMints.end(), mint.GetValue().GetHex());
-            if (it != listSelectedMints.end()) {
-                listSelectedMints.erase(it);
-            }
+            if (setSelectedMints.count(strPubCoinHash))
+                setSelectedMints.erase(strPubCoinHash);
 
-            string strReason = "";
-            if(nConfirmations < Params().Zerocoin_MintRequiredConfirmations())
-                strReason = strprintf("Needs %d more confirmations", Params().Zerocoin_MintRequiredConfirmations() - nConfirmations);
+            std::string strReason = "";
+            if(nConfirmations < nRequiredConfs)
+                strReason = strprintf("Needs %d more confirmations", nRequiredConfs - nConfirmations);
+            else if (model->getEncryptionStatus() == WalletModel::EncryptionStatus::Locked)
+                strReason = "Your wallet is locked. Impossible to spend zSVR.";
+            else if (!mint.isSeedCorrect)
+                strReason = "The zSVR seed used to mint this zSVR is not the same as currently hold in the wallet";
             else
-                strReason = strprintf("Needs %d more mints added to network", Params().Zerocoin_RequiredAccumulation() - nMintsAdded);
+                strReason = "Needs 1 more mint added to network";
 
             itemMint->setText(COLUMN_ISSPENDABLE, QString::fromStdString(strReason));
         } else {
@@ -134,64 +167,61 @@ void ZSVRControlDialog::updateList()
 }
 
 // Update the list when a checkbox is clicked
-void ZSVRControlDialog::updateSelection(QTreeWidgetItem* item, int column)
+void ZSvrControlDialog::updateSelection(QTreeWidgetItem* item, int column)
 {
     // only want updates from non top level items that are available to spend
     if (item->parent() && column == COLUMN_CHECKBOX && !item->isDisabled()){
 
         // see if this mint is already selected in the selection list
         std::string strPubcoin = item->text(COLUMN_PUBCOIN).toStdString();
-        auto iter = std::find(listSelectedMints.begin(), listSelectedMints.end(), strPubcoin);
-        bool fSelected = iter != listSelectedMints.end();
+        bool fSelected = setSelectedMints.count(strPubcoin);
 
         // set the checkbox to the proper state and add or remove the mint from the selection list
         if (item->checkState(COLUMN_CHECKBOX) == Qt::Checked) {
             if (fSelected) return;
-            listSelectedMints.emplace_back(strPubcoin);
+            setSelectedMints.insert(strPubcoin);
         } else {
             if (!fSelected) return;
-            listSelectedMints.erase(iter);
+            setSelectedMints.erase(strPubcoin);
         }
         updateLabels();
     }
 }
 
 // Update the Quantity and Amount display
-void ZSVRControlDialog::updateLabels()
+void ZSvrControlDialog::updateLabels()
 {
     int64_t nAmount = 0;
-    for (const CZerocoinMint mint : listMints) {
-        if (count(listSelectedMints.begin(), listSelectedMints.end(), mint.GetValue().GetHex())) {
-            nAmount += mint.GetDenomination();
-        }
+    for (const CMintMeta& mint : setMints) {
+        if (setSelectedMints.count(mint.hashPubcoin.GetHex()))
+            nAmount += mint.denom;
     }
 
     //update this dialog's labels
-    ui->labelZSVR_int->setText(QString::number(nAmount));
-    ui->labelQuantity_int->setText(QString::number(listSelectedMints.size()));
+    ui->labelZSvr_int->setText(QString::number(nAmount));
+    ui->labelQuantity_int->setText(QString::number(setSelectedMints.size()));
 
     //update PrivacyDialog labels
-    privacyDialog->setZSVRControlLabels(nAmount, listSelectedMints.size());
+    //privacyDialog->setZPivControlLabels(nAmount, setSelectedMints.size());
 }
 
-std::vector<CZerocoinMint> ZSVRControlDialog::GetSelectedMints()
+std::vector<CMintMeta> ZSvrControlDialog::GetSelectedMints()
 {
-    std::vector<CZerocoinMint> listReturn;
-    for (const CZerocoinMint mint : listMints) {
-        if (count(listSelectedMints.begin(), listSelectedMints.end(), mint.GetValue().GetHex())) {
+    std::vector<CMintMeta> listReturn;
+    for (const CMintMeta& mint : setMints) {
+        if (setSelectedMints.count(mint.hashPubcoin.GetHex()))
             listReturn.emplace_back(mint);
-        }
     }
 
     return listReturn;
 }
 
 // select or deselect all of the mints
-void ZSVRControlDialog::ButtonAllClicked()
+void ZSvrControlDialog::ButtonAllClicked()
 {
     ui->treeWidget->blockSignals(true);
     Qt::CheckState state = Qt::Checked;
-    for(int i = 0; i < ui->treeWidget->topLevelItemCount(); i++) {
+    for (int i = 0; i < ui->treeWidget->topLevelItemCount(); i++) {
         if(ui->treeWidget->topLevelItem(i)->checkState(COLUMN_CHECKBOX) != Qt::Unchecked) {
             state = Qt::Unchecked;
             break;
@@ -201,11 +231,11 @@ void ZSVRControlDialog::ButtonAllClicked()
     //much quicker to start from scratch than to have QT go through all the objects and update
     ui->treeWidget->clear();
 
-    if(state == Qt::Checked) {
-        for(const CZerocoinMint mint : listMints)
-            listSelectedMints.emplace_back(mint.GetValue().GetHex());
+    if (state == Qt::Checked) {
+        for(const CMintMeta& mint : setMints)
+            setSelectedMints.insert(mint.hashPubcoin.GetHex());
     } else {
-        listSelectedMints.clear();
+        setSelectedMints.clear();
     }
 
     updateList();
