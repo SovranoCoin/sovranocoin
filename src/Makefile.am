@@ -110,6 +110,7 @@ BITCOIN_CORE_H = \
   primitives/block.h \
   primitives/transaction.h \
   core_io.h \
+  cuckoocache.h \
   crypter.h \
   pairresult.h \
   addressbook.h \
@@ -198,6 +199,7 @@ BITCOIN_CORE_H = \
   validationinterface.h \
   version.h \
   wallet/hdchain.h \
+  wallet/rpcwallet.h \
   wallet/scriptpubkeyman.h \
   wallet/wallet.h \
   wallet/wallet_ismine.h \

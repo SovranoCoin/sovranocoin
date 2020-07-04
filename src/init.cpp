@@ -56,6 +56,7 @@
 #include "wallet/db.h"
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
+#include "wallet/rpcwallet.h"
 
 #endif
 
@@ -130,10 +131,6 @@ CClientUIInterface uiInterface;
 // threads that should only be stopped after the main network-processing
 // threads have exited.
 //
-// Note that if running -daemon the parent process returns from AppInit2
-// before adding any threads to the threadGroup, so .join_all() returns
-// immediately and the parent exits from main().
-//
 // Shutdown for Qt is very similar, only it uses a QTimer to detect
 // fRequestShutdown getting set, and then does the normal Qt
 // shutdown thing.
@@ -197,7 +194,7 @@ void PrepareShutdown()
     if (!lockShutdown)
         return;
 
-    /// Note: Shutdown() must be able to handle cases in which AppInit2() failed part of the way,
+    /// Note: Shutdown() must be able to handle cases in which initialization failed part of the way,
     /// for example if the data directory was found to be locked.
     /// Be sure that anything that writes files or flushes caches only does this if the respective
     /// module was initialized.
@@ -359,11 +356,6 @@ void OnRPCStopped()
 
 void OnRPCPreCommand(const CRPCCommand& cmd)
 {
-#ifdef ENABLE_WALLET
-    if (cmd.reqWallet && !pwalletMain)
-        throw JSONRPCError(RPC_METHOD_NOT_FOUND, "Method not found (disabled)");
-#endif
-
     // Observe safe mode
     std::string strWarning = GetWarnings("rpc");
     if (strWarning != "" && !GetBoolArg("-disablesafemode", false) &&
@@ -1039,6 +1031,9 @@ bool AppInit2()
         if (SoftSetBoolArg("-staking", false))
             LogPrintf("AppInit2 : parameter interaction: wallet functionality not enabled -> setting -staking=0\n");
 #ifdef ENABLE_WALLET
+    } else {
+        // Register wallet RPC commands
+        walletRegisterRPCCommands();
     }
 #endif
 
@@ -1120,6 +1115,8 @@ bool AppInit2()
     LogPrintf("Using config file %s\n", GetConfigFile().string());
     LogPrintf("Using at most %i connections (%i file descriptors available)\n", nMaxConnections, nFD);
     std::ostringstream strErrors;
+
+    InitSignatureCache();
 
     LogPrintf("Using %u threads for script verification\n", nScriptCheckThreads);
     if (nScriptCheckThreads) {
