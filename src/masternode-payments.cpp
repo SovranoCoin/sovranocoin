@@ -550,13 +550,6 @@ bool CMasternodePayments::AddWinningMasternode(CMasternodePaymentWinner& winnerI
         return false;
     }
 
-    CMasternode* pmn = mnodeman.Find(winnerIn.vinMasternode);
-    if (!pmn->IsEnabled())
-    {
-        if (sporkManager.IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT)) return false;
-    }
-
-
     {
         LOCK2(cs_mapMasternodePayeeVotes, cs_mapMasternodeBlocks);
 
